@@ -20,3 +20,6 @@
   Membres présents : 
 
       Sébastien GROUÉ
+
+
+- Début du quadrillage du plan Magasin -> Sébastien GROUÉ
