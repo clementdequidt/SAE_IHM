@@ -1,10 +1,10 @@
 ## SAÉ GRAPHES - IHM R2-07 R2-02
 
-*Etudiant 1 :* DEQUIDT Clément 
+*Etudiant 1 :* DEQUIDT Clément *TPB*
 
-*Etudiant 2 :* DELDALLE Pierre 
+*Etudiant 2 :* DELDALLE Pierre *TPA*
 
-*Etudiant 3 :* COUSIN Bastien 
+*Etudiant 3 :* COUSIN Bastien *TPB*
 
-*Etudiant 4 :* GROUE Sébastien
+*Etudiant 4 :* GROUE Sébastien *TPE*
 
