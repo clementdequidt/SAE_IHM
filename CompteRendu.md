@@ -12,3 +12,4 @@
     
 - Création du dépôt Git et ajout des différents membres et professeur -> Clément DEQUIDT
 - Mise en place du compte rendu pour décrire l'avancée du projet -> Pierre DELDALLE
+- Réflexion sur la mise en place de l'agorithme pour créer le cadrillage du plan -> Bastien COUSIN principalement (+ Clément DEQUIDT et Pierre DELDALLE)
