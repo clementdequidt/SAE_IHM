@@ -23,3 +23,14 @@
 
 
 - Début du quadrillage du plan Magasin -> Sébastien GROUÉ
+
+
+
+*Mardi 27/05, séance de 13h00 à 14h30 :*
+  
+  Membres présents : 
+
+      Sébastien GROUÉ
+
+
+- Fin et rendu du quadrillage du plan Magasin -> Sébastien GROUÉ
