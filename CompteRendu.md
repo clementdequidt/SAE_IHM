@@ -28,11 +28,11 @@
 
 *Mardi 27/05, séance de 13h00 à 14h30 :*
   
-  Membres présents : 
+  Membre présent : 
 
       Sébastien GROUÉ
 
 
 - Fin et rendu du quadrillage du plan Magasin -> Sébastien GROUÉ
-- Début de réflexion sur la plan Interface homme machine
+- Début de réflexion sur le plan Interface homme machine
 
