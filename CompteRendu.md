@@ -34,3 +34,5 @@
 
 
 - Fin et rendu du quadrillage du plan Magasin -> Sébastien GROUÉ
+- Début de réflexion sur la plan Interface homme machine
+
