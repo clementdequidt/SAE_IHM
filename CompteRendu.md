@@ -25,7 +25,6 @@
 - Début du quadrillage du plan Magasin -> Sébastien GROUÉ
 
 
-
 *Mardi 27/05, séance de 13h00 à 14h30 :*
   
   Membre présent : 
@@ -36,3 +35,11 @@
 - Fin et rendu du quadrillage du plan Magasin -> Sébastien GROUÉ
 - Début de réflexion sur le plan Interface homme machine
 
+
+*Mardi 27/05, séance de 14h30 à 16h :*
+
+ Membre présent : 
+
+    Pierre DELDALLE
+
+- Ralisation de la maquette de l'interface employé -> Pierre DELDALLE
