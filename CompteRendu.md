@@ -42,4 +42,4 @@
 
     Pierre DELDALLE
 
-- Ralisation de la maquette de l'interface employé -> Pierre DELDALLE
+- Réalisation de la maquette de l'interface employé -> Pierre DELDALLE
