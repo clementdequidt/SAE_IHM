@@ -43,3 +43,12 @@
     Pierre DELDALLE
 
 - Réalisation de la maquette de l'interface employé -> Pierre DELDALLE
+
+*Mercredi 28/05, séance de 16h à 17h30 :*
+
+Membres présents :
+
+    Clément DEQUIDT
+    Bastien COUSIN
+
+- Réflexion sur le codage du magasin et des cases -> Clément DEQUIDT et Bastien COUSIN
