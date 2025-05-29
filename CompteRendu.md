@@ -17,7 +17,7 @@
 
 *Lundi 26/05, séance de 14h30 à 16h00 :*
   
-  Membres présents : 
+  Membre présent : 
 
       Sébastien GROUÉ
 
