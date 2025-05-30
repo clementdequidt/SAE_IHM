@@ -12,7 +12,7 @@
     
 - Création du dépôt Git et ajout des différents membres et professeurs -> Clément DEQUIDT
 - Mise en place du compte rendu pour décrire l'avancée du projet -> Pierre DELDALLE
-- Réflexion sur la mise en place de l'algorithme pour créer le quadrillage du plan -> Bastien COUSIN principalement (+ Clément DEQUIDT et Pierre DELDALLE)
+- Réflexion sur la mise en place du plan du magasin avec le quadrillage -> Bastien COUSIN principalement (+ Clément DEQUIDT et Pierre DELDALLE)
 
 
 *Lundi 26/05, séance de 14h30 à 16h00 :*
@@ -42,7 +42,7 @@
 
     Pierre DELDALLE
 
-- Réalisation de la maquette de l'interface employé -> Pierre DELDALLE
+- Réalisation de la maquette de l'interface client -> Pierre DELDALLE
 
 *Mercredi 28/05, séance de 16h à 17h30 :*
 
