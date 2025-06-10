@@ -78,7 +78,7 @@ class Plan():
     def trouverCasesAVisiter(self, listeCourses: list):
         casesAVisiter = []
         for item in listeCourses:
-            for i in range(self.__largeur):
+            for case in self.trouverCasesPossiblesItem(item):
                 for j in range(self.__longueur):
                     case = self.__cases[i][j]
                     if case.isRayon() and item in case.getItemsInRayon() and case not in casesAVisiter:
