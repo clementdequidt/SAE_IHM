@@ -92,10 +92,12 @@ class Plan():
                 distanceMin = 0
                 caseAVisiter = None
                 for case in self.trouverCasesPossiblesItem(item):
-                    distanceCase = len(self.plusCourtCheminCase(depart, case.getCoord()) - 1)
-                    if distanceCase < distanceMin or distanceMin == 0:
-                        distanceMin = distanceCase
-                        caseAVisiter = case
+                    chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
+                    if chemin:
+                        distanceCase = len(chemin) - 1
+                        if distanceCase < distanceMin or distanceMin == 0:
+                            distanceMin = distanceCase
+                            caseAVisiter = case
                 casesAVisiter.append(case)
         return casesAVisiter
     
@@ -137,4 +139,18 @@ class Plan():
         
     
     def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
+        cheminTotal = []
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
+        caseActuelle = self.getCase(depart)
+        
+        for case in casesAVisiter:
+            chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), case.getCoord())
+            if not chemin:
+                print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {case.getCoord()}.")
+                continue
+            if cheminTotal and chemin[0] == cheminTotal[-1]:
+                cheminTotal.extend(chemin[1:])
+            else:
+                cheminTotal.extend(chemin)
+            caseActuelle = case
+        return cheminTotal
