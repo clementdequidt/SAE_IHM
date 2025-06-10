@@ -20,13 +20,14 @@ class PageQuestionnaire(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(QLabel("<h2>Questionnaire de démarrage</h2>"))
 
-        self.projet_input= QLabel("Nom du projet")
+        layout.addWidget(QLabel("Nom du projet :"))
         self.projet_input = QLineEdit()
         self.projet_input.setPlaceholderText("Saisissez le nom du projet")
         layout.addWidget(self.projet_input)
 
+        layout.addWidget(QLabel("Saisissez votre nom :"))
         self.auteur_input = QLineEdit()
-        self.auteur_input.setPlaceholderText("Auteur du projet")
+        self.auteur_input.setPlaceholderText("Saisissez votre nom")
         layout.addWidget(self.auteur_input)
 
         self.date_input = QDateEdit()
@@ -35,10 +36,12 @@ class PageQuestionnaire(QWidget):
         layout.addWidget(QLabel("Date de création"))
         layout.addWidget(self.date_input)
 
+        layout.addWidget(QLabel("Nom du magasin :"))
         self.nom_magasin_input = QLineEdit()
-        self.nom_magasin_input.setPlaceholderText("Nom du magasin")
+        self.nom_magasin_input.setPlaceholderText("Saisissez le nom du magasin")
         layout.addWidget(self.nom_magasin_input)
 
+        layout.addWidget(QLabel("Adresse du magasin :"))
         self.adresse_magasin_input = QLineEdit()
         self.adresse_magasin_input.setPlaceholderText("Adresse du magasin")
         layout.addWidget(self.adresse_magasin_input)
