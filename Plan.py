@@ -1,4 +1,5 @@
 from Case import Case
+import heapq
 
 class Plan():
     def __init__(self, longueur: int, largeur: int):
@@ -86,7 +87,41 @@ class Plan():
         return casesAVisiter
     
     def plusCourtCheminCase(self, depart: tuple, case: tuple):
-        pass
+        distances = {(i,j): float('inf') for i in range(self.__largeur) for j in range(self.__longueur)}
+        distances[depart] = 0
+        predecesseurs = {}
+        file = [(0, depart)]
+        
+        while file:
+            dist_actuelle, coord_actuelle = heapq.heappop(file)
+            if coord_actuelle == arrivee:
+                break
+            
+        case_actuelle = self.getCase(coord_actuelle)
+        if case_actuelle.isObstacle():
+            continue
+        
+        for voisin in self.casesVoisines(case_actuelle):
+            coord_voisin = voisin.getCoord()
+            if voisin.isObstacle():
+                continue
+            nouvelle_distance = dist_actuelle + 1
+            if nouvelle_distance < distances[coord_voisin]:
+                distances[coord_voisin] = nouvelle_distance
+                predecesseurs[coord_voisin] = coord_actuelle
+                heapq.heappush(file, (nouvelle_distance, coord_voisin))
+                
+        chemin = []
+        courant = arrivee
+        if courant not in predecesseurs:
+            return []
+        while courant != depart:
+            chemin.append(courant)
+            courant = predecesseurs[courant]
+        chemin.append(depart)
+        chemin.reverse()
+        return chemin  
+        
     
     def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
