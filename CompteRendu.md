@@ -52,3 +52,16 @@ Membres présents :
     Bastien COUSIN
 
 - Réflexion sur le codage du magasin et des cases -> Clément DEQUIDT et Bastien COUSIN
+
+*Mardi 10/06, J1 SAE :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+ - Création des maquettes des deux applications -> Pierre DELDALLE (gérant) et Sébastien GROUÉ (client)
+ - Développement des classes Case, Plan et Magasin qui seront utilisées dans les modèles des applications -> Clément DEQUIDT et Bastien COUSIN
+ - Commencement du développement des vues des deux applications -> Pierre DELDALLE (gérant) et Sébastien GROUÉ (client)
