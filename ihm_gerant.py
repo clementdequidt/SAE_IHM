@@ -9,8 +9,8 @@ class FenetrePrincipale(QWidget):
         super().__init__()
 
         self.setWindowTitle("app:layout")
-        screen_geometry = QApplication.primaryScreen().availableGeometry()
-        self.setGeometry(screen_geometry)
+        self.resize(QApplication.primaryScreen().availableGeometry().size())
+        self.move(0, 0)
         self.show()
 
 
