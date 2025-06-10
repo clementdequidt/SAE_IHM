@@ -135,13 +135,12 @@ class Plan():
             courant = predecesseurs[courant]
         chemin.append(depart)
         chemin.reverse()
-        return chemin  
-        
+        return chemin
     
-    def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
+    def plusCourtCheminListeCourses(self, listeCourses: list):
         cheminTotal = []
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
-        caseActuelle = self.getCase(depart)
+        caseActuelle = self.trouverDepart()
         
         for case in casesAVisiter:
             chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), case.getCoord())
