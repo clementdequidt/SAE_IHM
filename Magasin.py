@@ -65,9 +65,3 @@ class Magasin():
                 else:
                     ligne.append(".")
             print(" ".join(ligne))
-
-    def get_case(self, coord):
-        return self.plan.getCase(coord)
-
-    def set_items_accessible(self, coord):
-        self.plan.setItemsAccessible(coord)

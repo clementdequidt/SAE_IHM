@@ -52,6 +52,7 @@ class Plan():
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             case = self.__cases[coord[0]][coord[1]]
             case.setDepart(input(f"Est-ce que la case {coord} est un point de départ ? (oui/non) ").strip().lower() == 'oui')
+            case.setCaisse(input(f"Est-ce que la case {coord} est une caisse ? (oui/non) ").strip().lower() == 'oui')
             case.setRayon(input(f"Est-ce que la case {coord} est un rayon ? (oui/non) ").strip().lower() == 'oui')
             if case.isRayon():
                 itemsInRayon = input(f"Quels sont les items dans le rayon de la case {coord} ? (séparés par des virgules) ").strip().split(',')
@@ -64,3 +65,28 @@ class Plan():
         for i in range(self.__largeur):
             for j in range(self.__longueur):
                 self.remplirCase((i, j))
+    
+    def trouverCasesPossiblesItem(self, item: str):
+        casesPossibles = []
+        for i in range(self.__largeur):
+            for j in range(self.__longueur):
+                case = self.__cases[i][j]
+                if not case.isObstacle() and item in case.getItemsAccessible():
+                    casesPossibles.append(case)
+        return casesPossibles
+    
+    def trouverCasesAVisiter(self, listeCourses: list):
+        casesAVisiter = []
+        for item in listeCourses:
+            for i in range(self.__largeur):
+                for j in range(self.__longueur):
+                    case = self.__cases[i][j]
+                    if case.isRayon() and item in case.getItemsInRayon() and case not in casesAVisiter:
+                        casesAVisiter.append(case)
+        return casesAVisiter
+    
+    def plusCourtCheminCase(self, depart: tuple, case: tuple):
+        pass
+    
+    def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
+        casesAVisiter = self.trouverCasesAVisiter(listeCourses)
