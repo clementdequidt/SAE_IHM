@@ -86,7 +86,7 @@ class Plan():
                         casesAVisiter.append(case)
         return casesAVisiter
     
-    def plusCourtCheminCase(self, depart: tuple, case: tuple):
+    def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
         distances = {(i,j): float('inf') for i in range(self.__largeur) for j in range(self.__longueur)}
         distances[depart] = 0
         predecesseurs = {}
@@ -97,19 +97,19 @@ class Plan():
             if coord_actuelle == arrivee:
                 break
             
-        case_actuelle = self.getCase(coord_actuelle)
-        if case_actuelle.isObstacle():
-            continue
-        
-        for voisin in self.casesVoisines(case_actuelle):
-            coord_voisin = voisin.getCoord()
-            if voisin.isObstacle():
+            case_actuelle = self.getCase(coord_actuelle)
+            if case_actuelle.isObstacle():
                 continue
-            nouvelle_distance = dist_actuelle + 1
-            if nouvelle_distance < distances[coord_voisin]:
-                distances[coord_voisin] = nouvelle_distance
-                predecesseurs[coord_voisin] = coord_actuelle
-                heapq.heappush(file, (nouvelle_distance, coord_voisin))
+        
+            for voisin in self.casesVoisines(case_actuelle):
+                coord_voisin = voisin.getCoord()
+                if voisin.isObstacle():
+                    continue
+                nouvelle_distance = dist_actuelle + 1
+                if nouvelle_distance < distances[coord_voisin]:
+                    distances[coord_voisin] = nouvelle_distance
+                    predecesseurs[coord_voisin] = coord_actuelle
+                    heapq.heappush(file, (nouvelle_distance, coord_voisin))
                 
         chemin = []
         courant = arrivee
