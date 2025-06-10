@@ -67,6 +67,14 @@ class Plan():
             for j in range(self.__longueur):
                 self.remplirCase((i, j))
     
+    def trouverDepart(self):
+        for i in range(self.__largeur):
+            for j in range(self.__longueur):
+                case = self.__cases[i][j]
+                if case.isDepart():
+                    return case
+        return None
+    
     def trouverCasesPossiblesItem(self, item: str):
         casesPossibles = []
         for i in range(self.__largeur):
@@ -78,12 +86,19 @@ class Plan():
     
     def trouverCasesAVisiter(self, listeCourses: list):
         casesAVisiter = []
-        for item in listeCourses:
-            for case in self.trouverCasesPossiblesItem(item):
-                for j in range(self.__longueur):
-                    case = self.__cases[i][j]
-                    if case.isRayon() and item in case.getItemsInRayon() and case not in casesAVisiter:
-                        casesAVisiter.append(case)
+        depart = self.trouverDepart()
+        if depart is not None:
+            for item in listeCourses:
+                distanceMin = 0
+                caseAVisiter = None
+                for case in self.trouverCasesPossiblesItem(item):
+                    chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
+                    if chemin:
+                        distanceCase = len(chemin) - 1
+                        if distanceCase < distanceMin or distanceMin == 0:
+                            distanceMin = distanceCase
+                            caseAVisiter = case
+                casesAVisiter.append(case)
         return casesAVisiter
     
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
@@ -124,4 +139,18 @@ class Plan():
         
     
     def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
+        cheminTotal = []
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
+        caseActuelle = self.getCase(depart)
+        
+        for case in casesAVisiter:
+            chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), case.getCoord())
+            if not chemin:
+                print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {case.getCoord()}.")
+                continue
+            if cheminTotal and chemin[0] == cheminTotal[-1]:
+                cheminTotal.extend(chemin[1:])
+            else:
+                cheminTotal.extend(chemin)
+            caseActuelle = case
+        return cheminTotal
