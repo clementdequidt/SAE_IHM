@@ -57,6 +57,8 @@ class Plan():
                         if caseAdj.isRayon():
                             itemsAccessible.extend(caseAdj.getItemsInRayon())
             case.setItemsAccessible(itemsAccessible)
+        else:
+            case.setItemsAccessible([])
     
     # à tester
     def remplirCase(self, coord: tuple):
@@ -112,11 +114,15 @@ class Plan():
                         if distanceCase < distanceMin or distanceMin == 0:
                             distanceMin = distanceCase
                             caseAVisiter = case
-                casesAVisiter.append(case)
+                if caseAVisiter is not None:
+                    casesAVisiter.append(caseAVisiter)
         return casesAVisiter
     
     # à tester et surement à revoir
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
+        if depart == arrivee:
+            return [depart]
+        
         distances = {(i,j): float('inf') for i in range(self.__largeur) for j in range(self.__longueur)}
         distances[depart] = 0
         predecesseurs = {}
