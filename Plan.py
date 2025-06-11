@@ -91,7 +91,7 @@ class Plan():
                     return case
         return None
     
-    # # OK
+    # OK
     def trouverCasesPossiblesItem(self, item: str):
         casesPossibles = []
         for i in range(self.__largeur):
@@ -114,6 +114,30 @@ class Plan():
                     caseAVisiter = case
         if caseAVisiter is not None:
             return caseAVisiter
+    
+    # OK
+    def trouverCaissesPossibles(self):
+        caissesPossibles = []
+        for i in range(self.__largeur):
+            for j in range(self.__longueur):
+                case = self.__cases[i][j]
+                if case.isCaisse():
+                    caissesPossibles.append(case)
+        return caissesPossibles
+    
+    # OK mais à tester en condition réelle quand même
+    def trouverCaisseAVisiter(self, depart: Case):
+        distanceMin = 0
+        caisseAVisiter = None
+        for caisse in self.trouverCaissesPossibles():
+            chemin = self.plusCourtCheminCase(depart.getCoord(), caisse.getCoord())
+            if chemin:
+                distanceCaisse = len(chemin) - 1
+                if distanceCaisse < distanceMin or distanceMin == 0:
+                    distanceMin = distanceCaisse
+                    caisseAVisiter = caisse
+        if caisseAVisiter is not None:
+            return caisseAVisiter
     
     # OK mais à tester en condition réelle quand même
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
@@ -171,6 +195,16 @@ class Plan():
             else:
                 cheminTotal.extend(chemin)
             caseActuelle = caseAVisiter
+
+        caseAVisiter = self.trouverCaisseAVisiter(caseActuelle)
+        chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), caseAVisiter.getCoord())
+        if not chemin:
+            print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {caseAVisiter.getCoord()}.")
+        if cheminTotal and chemin[0] == cheminTotal[-1]:
+            cheminTotal.extend(chemin[1:])
+        else:
+            cheminTotal.extend(chemin)
+
         return cheminTotal
     
     # OK
