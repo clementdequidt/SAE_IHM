@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QIcon, QAction, QPixmap
 from PyQt6.QtCore import Qt, QDate
 
-# --- Détection du thème système (Windows uniquement pour l'instant) ---
+# --- Détection du thème système ---
 def detecter_theme_systeme():
     if platform.system() == "Windows":
         try:
@@ -60,6 +60,32 @@ class PageQuestionnaire(QWidget):
         outer_layout.addStretch()
         self.setLayout(outer_layout)
 
+            # Appliquer une belle feuille de style
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 14px;
+                color: #fff;
+                font-weight: bold;
+            }
+            QLineEdit, QDateEdit {
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                margin-bottom: 5px;
+                font-size: 14px;
+            }
+            QPushButton {
+                background-color: #007acc;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #005999;
+            }
+        """)
+    
     def _add_labeled_input(self, label_text, placeholder, layout):
         layout.addWidget(QLabel(label_text))
         line = QLineEdit()
@@ -152,7 +178,7 @@ class FenetreAppli(QMainWindow):
                     padding: 4px;
                     }
                 QPushButton {
-                    background-color: #007acc;
+                    background-color: #00ab06;
                     color: white;
                     border-radius: 4px;
                     padding: 6px 12px;
@@ -180,13 +206,13 @@ class FenetreAppli(QMainWindow):
                     padding: 4px;
                     }
                 QPushButton {
-                    background-color: #3a7bd5;
+                    background-color: #00ab06;
                     color: white;
                     border-radius: 4px;
                     padding: 6px 12px;
                     }
                 QPushButton:hover {
-                    background-color: #285ea8;
+                    background-color: #8aff8e;
                     }
             """
 
