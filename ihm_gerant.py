@@ -64,11 +64,10 @@ class PageQuestionnaire(QWidget):
         self.setStyleSheet("""
             QLabel {
                 font-size: 14px;
-                color: #fff;
                 font-weight: bold;
             }
             QLineEdit, QDateEdit {
-                border: 1px solid #ccc;
+                border: 1px solid;
                 border-radius: 5px;
                 margin-bottom: 5px;
                 font-size: 14px;
