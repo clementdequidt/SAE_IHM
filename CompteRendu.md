@@ -67,7 +67,7 @@ Membres Présents :
  - Commencement du développement des vues des deux applications -> Pierre DELDALLE (gérant) et Sébastien GROUÉ (client)
 
 
-*Mercredi 11/06, J2 SAE 8h30/16h :*
+*Mercredi 11/06, J2 SAE 8h30/11h30 en présentiel 13h30/17h30 en télétravail :*
 
 Membres Présents :
 
@@ -75,3 +75,10 @@ Membres Présents :
       Pierre DELDALLE
       Clément DEQUIDT
       Sébastien GROUÉ 
+
+- Création des tests unitaires -> Clément DEQUIDT (matin)
+- Développement des classes Case, Plan et Magasin finies -> Bastien COUSIN
+- Documentation des classes et des tests unitaires -> Bastien COUSIN
+- Développement IHM Gérant (quasiment fini, manque une grosse fonctionnalité) -> D'abord Pierre DELDALLE (matin) puis Clément DEQUIDT et Sébastien GROUÉ (après-midi)
+- Documentation de l'IHM Gérant -> Sébastien GROUÉ (après-midi)
+- Début écriture de la notice d'utilisateur -> Pierre DELDALLE (après-midi)
