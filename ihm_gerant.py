@@ -1,56 +1,81 @@
 import sys
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton,
-    QMessageBox, QTextEdit, QDockWidget, QStackedWidget, QStatusBar, QFileDialog
+    QMessageBox, QTextEdit, QDockWidget, QStackedWidget, QStatusBar, QFileDialog, QDateEdit
 )
 from PyQt6.QtGui import QIcon, QAction, QPixmap
-from PyQt6.QtCore import Qt
-
-# --- Page de questionnaire ---
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QDateEdit
-)
-from PyQt6.QtCore import QDate
+from PyQt6.QtCore import Qt, QDate
 
 class PageQuestionnaire(QWidget):
     def __init__(self, switch_callback):
         super().__init__()
         self.switch_callback = switch_callback
 
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("<h2>Questionnaire de démarrage</h2>"))
+        form_layout = QVBoxLayout()
+        form_layout.setContentsMargins(40, 40, 40, 40)
+        form_layout.setSpacing(15)
 
-        layout.addWidget(QLabel("Nom du projet :"))
-        self.projet_input = QLineEdit()
-        self.projet_input.setPlaceholderText("Saisissez le nom du projet")
-        layout.addWidget(self.projet_input)
+        title = QLabel("Création d'un nouveau magasin")
+        title.setStyleSheet("font-size: 24px; font-weight: bold;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(title)
 
-        layout.addWidget(QLabel("Saisissez votre nom :"))
-        self.auteur_input = QLineEdit()
-        self.auteur_input.setPlaceholderText("Saisissez votre nom")
-        layout.addWidget(self.auteur_input)
+        # Exemple champ stylisé
+        self.projet_input = self._add_labeled_input("Nom du projet :", "Saisissez le nom du projet", form_layout)
+        self.auteur_input = self._add_labeled_input("Votre nom :", "Saisissez votre nom", form_layout)
 
+        form_layout.addWidget(QLabel("Date de création :"))
         self.date_input = QDateEdit()
         self.date_input.setCalendarPopup(True)
         self.date_input.setDate(QDate.currentDate())
-        layout.addWidget(QLabel("Date de création"))
-        layout.addWidget(self.date_input)
+        form_layout.addWidget(self.date_input)
 
-        layout.addWidget(QLabel("Nom du magasin :"))
-        self.nom_magasin_input = QLineEdit()
-        self.nom_magasin_input.setPlaceholderText("Saisissez le nom du magasin")
-        layout.addWidget(self.nom_magasin_input)
-
-        layout.addWidget(QLabel("Adresse du magasin :"))
-        self.adresse_magasin_input = QLineEdit()
-        self.adresse_magasin_input.setPlaceholderText("Adresse du magasin")
-        layout.addWidget(self.adresse_magasin_input)
+        self.nom_magasin_input = self._add_labeled_input("Nom du magasin :", "Nom du magasin", form_layout)
+        self.adresse_magasin_input = self._add_labeled_input("Adresse du magasin :", "Adresse complète", form_layout)
 
         btn_valider = QPushButton("Valider")
         btn_valider.clicked.connect(self.verifier_et_passer)
-        layout.addWidget(btn_valider)
+        form_layout.addWidget(btn_valider)
 
-        self.setLayout(layout)
+        # Appliquer une belle feuille de style
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 14px;
+                color: #fff;
+                font-weight: bold;
+            }
+            QLineEdit, QDateEdit {
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                padding: 6px;
+                font-size: 14px;
+            }
+            QPushButton {
+                background-color: #007acc;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #005999;
+            }
+        """)
+
+        # Centrage vertical
+        outer_layout = QVBoxLayout()
+        outer_layout.addStretch()
+        outer_layout.addLayout(form_layout)
+        outer_layout.addStretch()
+        self.setLayout(outer_layout)
+
+    def _add_labeled_input(self, label_text, placeholder, layout):
+        layout.addWidget(QLabel(label_text))
+        line = QLineEdit()
+        line.setPlaceholderText(placeholder)
+        layout.addWidget(line)
+        return line
 
     def verifier_et_passer(self):
         if not all([
@@ -61,7 +86,6 @@ class PageQuestionnaire(QWidget):
         ]):
             QMessageBox.warning(self, "Champs requis", "Veuillez remplir tous les champs.")
             return
-
         self.switch_callback()
 
 
@@ -72,7 +96,6 @@ class FenetreAppli(QMainWindow):
         self.__chemin = chemin
 
         self.setWindowTitle("IHM Gérant")
-        self.setWindowIcon(QIcon(sys.path[0] + '/icones/logo_but.png'))
         self.setGeometry(100, 100, 800, 600)
 
         # dock
