@@ -1,5 +1,7 @@
 from Case import Case
 import heapq
+import json
+import random
 
 class Plan():
     # OK
@@ -175,3 +177,19 @@ class Plan():
                 cheminTotal.extend(chemin)
             caseActuelle = case
         return cheminTotal
+    
+    def listeCoursesAleatoire(self):
+        with open('C:/Users/basti/Documents/SAE_IHM/Liste de produits-20250526/liste_produits.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        tous_les_produits = []
+        for produits in data.values():
+            tous_les_produits.extend(produits)
+
+        taille_liste = random.randint(20, len(tous_les_produits))
+        liste_aleatoire = random.sample(tous_les_produits, taille_liste)
+
+        for produit in liste_aleatoire:
+            print(produit)
+        
+        return liste_aleatoire
