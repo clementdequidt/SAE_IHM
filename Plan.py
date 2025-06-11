@@ -102,26 +102,18 @@ class Plan():
         return casesPossibles
     
     # à revoir car case plus proche du départ != case plus proche d'une autre case ? à tester sinon
-    def trouverCasesAVisiter(self, listeCourses: list):
-        casesAVisiter = []
-        depart = self.trouverDepart()
-        if not depart:
-            return casesAVisiter
-        
-        for item in listeCourses:
-            meilleureCase = None
-            meilleureDistance = float('inf')
-            for case in self.trouverCasesPossiblesItem(item):
-                chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
-                if chemin:
-                    distance = len(chemin) - 1
-                    if distance < meilleureDistance:
-                        meilleureDistance = distance
-                        meilleureCase = case
-            if meilleureCase:
-                casesAVisiter.append(meilleureCase)
-                
-        return casesAVisiter
+    def trouverCaseAVisiterItem(self, depart: Case, item: str):
+        distanceMin = 0
+        caseAVisiter = None
+        for case in self.trouverCasesPossiblesItem(item):
+            chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
+            if chemin:
+                distanceCase = len(chemin) - 1
+                if distanceCase < distanceMin or distanceMin == 0:
+                    distanceMin = distanceCase
+                    caseAVisiter = case
+        if caseAVisiter is not None:
+            return caseAVisiter
     
     # OK mais à tester en condition réelle quand même
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
