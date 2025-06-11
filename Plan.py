@@ -35,7 +35,7 @@ class Plan():
     def regenererPlan(self):
         self.__cases = [[Case((i, j)) for i in range(self.__longueur)] for j in range(self.__largeur)]
     
-    # à tester
+    # OK
     def casesVoisines(self, case: Case):
         coord = case.getCoord()
         voisins = []
@@ -46,7 +46,7 @@ class Plan():
                 voisins.append(self.__cases[voisinCoord[0]][voisinCoord[1]])
         return voisins
     
-    # à tester
+    # OK
     def setItemsAccessible(self, coord: tuple):
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             case = self.__cases[coord[0]][coord[1]]
@@ -62,7 +62,7 @@ class Plan():
         else:
             case.setItemsAccessible([])
     
-    # à tester
+    # OK
     def remplirCase(self, coord: tuple):
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             case = self.__cases[coord[0]][coord[1]]
@@ -76,13 +76,13 @@ class Plan():
             case.setObstacle(input(f"Est-ce que la case {coord} est un obstacle ? (oui/non) ").strip().lower() == 'oui')
             self.setItemsAccessible(coord)
     
-    # à tester
+    # OK
     def remplirPlan(self):
         for i in range(self.__largeur):
             for j in range(self.__longueur):
                 self.remplirCase((i, j))
     
-    # à tester
+    # OK
     def trouverDepart(self):
         for i in range(self.__largeur):
             for j in range(self.__longueur):
@@ -91,7 +91,7 @@ class Plan():
                     return case
         return None
     
-    # à tester
+    # # OK
     def trouverCasesPossiblesItem(self, item: str):
         casesPossibles = []
         for i in range(self.__largeur):
@@ -120,7 +120,7 @@ class Plan():
                     casesAVisiter.append(caseAVisiter)
         return casesAVisiter
     
-    # à tester et surement à revoir
+    # OK mais à tester en condition réelle quand même
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
         if depart == arrivee:
             return [depart]
@@ -160,7 +160,7 @@ class Plan():
         chemin.reverse()
         return chemin
     
-    # à relire
+    # OK mais à tester en condition réelle quand même
     def plusCourtCheminListeCourses(self, listeCourses: list):
         cheminTotal = []
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
@@ -178,6 +178,7 @@ class Plan():
             caseActuelle = case
         return cheminTotal
     
+    # OK
     def listeCoursesAleatoire(self):
         with open('C:/Users/basti/Documents/SAE_IHM/Liste de produits-20250526/liste_produits.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
