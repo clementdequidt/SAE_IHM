@@ -105,19 +105,22 @@ class Plan():
     def trouverCasesAVisiter(self, listeCourses: list):
         casesAVisiter = []
         depart = self.trouverDepart()
-        if depart is not None:
-            for item in listeCourses:
-                distanceMin = 0
-                caseAVisiter = None
-                for case in self.trouverCasesPossiblesItem(item):
-                    chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
-                    if chemin:
-                        distanceCase = len(chemin) - 1
-                        if distanceCase < distanceMin or distanceMin == 0:
-                            distanceMin = distanceCase
-                            caseAVisiter = case
-                if caseAVisiter is not None:
-                    casesAVisiter.append(caseAVisiter)
+        if not depart:
+            return casesAVisiter
+        
+        for item in listeCourses:
+            meilleureCase = None
+            meilleureDistance = float('inf')
+            for case in self.trouverCasesPossiblesItem(item):
+                chemin = self.plusCourtCheminCase(depart.getCoord(), case.getCoord())
+                if chemin:
+                    distance = len(chemin) - 1
+                    if distance < meilleureDistance:
+                        meilleureDistance = distance
+                        meilleureCase = case
+            if meilleureCase:
+                casesAVisiter.append(meilleureCase)
+                
         return casesAVisiter
     
     # à tester et surement à revoir
