@@ -6,10 +6,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QIcon, QAction, QPixmap
 from PyQt6.QtCore import Qt, QDate
 
-<<<<<<< HEAD
-=======
 # --- Page de questionnaire ---
->>>>>>> bee0d755d64b6d4ba05f7005c655e3ed3abdf433
 class PageQuestionnaire(QWidget):
     def __init__(self, switch_callback):
         super().__init__()
@@ -144,46 +141,69 @@ class FenetreAppli(QMainWindow):
         action_retablir.triggered.connect(self.text_edit.redo)
         menu_edition.addAction(action_retablir)
 
+    def get_stylesheet(self, theme: str) -> str:
+        if theme == "clair":
+            return """
+                QWidget {
+                    background-color: #f0f0f0;
+                    color: #000;
+                    font-family: Arial;
+                    font-size: 14px;
+                    }
+                QLabel {
+                    color: #000;
+                    }
+                QLineEdit, QDateEdit {
+                    background-color: #fff;
+                    color: #000;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    padding: 4px;
+                    }
+                QPushButton {
+                    background-color: #007acc;
+                    color: white;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    }
+                QPushButton:hover {
+                    background-color: #005999;
+                    }
+            """
+        else:
+            return """
+                QWidget {
+                    background-color: #2e2e2e;
+                    color: #fff;
+                    font-family: Arial;
+                    font-size: 14px;
+                    }
+                QLabel {
+                    color: #fff;
+                    }
+                QLineEdit, QDateEdit {
+                    background-color: #444;
+                    color: #fff;
+                    border: 1px solid #666;
+                    border-radius: 4px;
+                    padding: 4px;
+                    }
+                QPushButton {
+                    background-color: #3a7bd5;
+                    color: white;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    }
+                QPushButton:hover {
+                    background-color: #285ea8;
+                    }
+            """
+
     def appliquer_theme_clair(self):
-        style_clair = """
-            QWidget {
-                background-color: #f0f0f0;
-                color: #000000;
-                font-family: Arial;
-                font-size: 14px;
-            }
-            QPushButton {
-                background-color: #e0e0e0;
-                border: 1px solid #ccc;
-                padding: 5px;
-            }
-            QLineEdit {
-                background-color: #ffffff;
-                border: 1px solid #aaa;
-            }
-        """
-        self.setStyleSheet(style_clair)
+        self.setStyleSheet(self.get_stylesheet("clair"))
 
     def appliquer_theme_sombre(self):
-        style_sombre = """
-            QWidget {
-                background-color: #2e2e2e;
-                color: #ffffff;
-                font-family: Arial;
-                font-size: 14px;
-            }
-            QPushButton {
-                background-color: #444;
-                border: 1px solid #666;
-                padding: 5px;
-            }
-            QLineEdit {
-                background-color: #555;
-                color: #ffffff;
-                border: 1px solid #888;
-            }
-        """
-        self.setStyleSheet(style_sombre)
+        self.setStyleSheet(self.get_stylesheet("sombre"))
 
     def nouveau(self):
         self.barre_etat.showMessage('Créer un nouveau ....', 2000)
@@ -219,6 +239,13 @@ class AppMultiPages(QStackedWidget):
         self.addWidget(self.fenetre_appli)  # index 1
         self.setCurrentIndex(1)
         self.fenetre_appli.showMaximized()
+        
+    def appliquer_theme_clair(self):
+        QApplication.instance().setStyleSheet(self.get_stylesheet("clair"))
+
+    def appliquer_theme_sombre(self):
+        QApplication.instance().setStyleSheet(self.get_stylesheet("sombre"))
+
 
 # --- Lancement de l'application ---
 if __name__ == "__main__":
