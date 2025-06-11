@@ -174,7 +174,7 @@ class Plan():
                     casesPossibles.append(case)
         return casesPossibles
     
-    # OK mais à tester en condition réelle quand même
+    # Peut être un problème à régler (1 test ne passe pas)
     def trouverCaseAVisiterItem(self, depart: Case, item: str):
         """Trouve la case la plus proche à visiter pour prendre un item spécifique à partir d'une case de départ quelconque.
         

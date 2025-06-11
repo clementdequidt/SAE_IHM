@@ -6,8 +6,8 @@ class TestPlan(unittest.TestCase):
     """Classe de test pour la classe Plan."""
     
     def setUp(self):
-        """Initialise un plan de 5x5 cases pour les tests."""
-        self.plateau = Plan(5, 5)
+        """Initialise un plan de 3x3 cases pour les tests."""
+        self.plateau = Plan(3, 3)
 
     def test_getters_setters(self):
         """Test les getters et setters pour la longueur et la largeur du plan."""
