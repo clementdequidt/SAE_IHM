@@ -3,12 +3,13 @@ import datetime as dt
 
 class Magasin():
     # OK
-    def init(self, nomProjet: str, auteurProjet: str, date: dt, nomMagasin: str, adresse: str, longueur: int = 62, largeur: int = 47):
+    def init(self, nomProjet: str, auteurProjet: str, date: dt, nomMagasin: str, adresse: str, listeProduitsDispo: list, longueur: int = 62, largeur: int = 47):
         self.__nomProjet = nomProjet
         self.__auteurProjet = auteurProjet
         self.__date = dt.datetime
         self.__nomMagasin = nomMagasin
         self.__adresse = adresse
+        self.__listeProduitsDispo = listeProduitsDispo
         self.__plan = Plan(longueur, largeur)
 
     # OK
@@ -30,6 +31,10 @@ class Magasin():
     # OK
     def getAdresse(self):
         return self.__adresse
+    
+    # OK
+    def getListeProduitsDispo(self):
+        return self.__listeProduitsDispo
     
     # OK
     def getPlan(self):
@@ -54,12 +59,16 @@ class Magasin():
     # OK
     def setAdresse(self, adresse: str):
         self.__adresse = adresse
+        
+    # OK
+    def setListeProduitsDispo(self, listeProduitsDispo: list):
+        self.__listeProduitsDispo = listeProduitsDispo
     
     # OK
     def setPlan(self, plan: Plan):
         self.__plan = plan
 
-    # OK
+    # OK mais est-ce que c'est utile ?
     def remplirMagasin(self):
         print("Remplissage du magasin...")
         self.__plan.remplirPlan()
