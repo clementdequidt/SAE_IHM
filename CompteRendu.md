@@ -82,3 +82,5 @@ Membres Présents :
 - Développement IHM Gérant (quasiment fini, manque une grosse fonctionnalité) -> D'abord Pierre DELDALLE (matin) puis Clément DEQUIDT et Sébastien GROUÉ (après-midi)
 - Documentation de l'IHM Gérant -> Sébastien GROUÉ (après-midi)
 - Début écriture de la notice d'utilisateur -> Pierre DELDALLE (après-midi)
+- Développement IHM client (Fichier a pars afin de faire des test) Sébastien GROUÉ (matin)
+  
