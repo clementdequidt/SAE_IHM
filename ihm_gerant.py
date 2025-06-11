@@ -1,10 +1,25 @@
 import sys
+import platform
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton,
     QMessageBox, QTextEdit, QDockWidget, QStackedWidget, QStatusBar, QFileDialog, QDateEdit
 )
 from PyQt6.QtGui import QIcon, QAction, QPixmap
 from PyQt6.QtCore import Qt, QDate
+
+# --- Détection du thème système (Windows uniquement pour l'instant) ---
+def detecter_theme_systeme():
+    if platform.system() == "Windows":
+        try:
+            import winreg
+            registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+            key_path = r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
+            key = winreg.OpenKey(registry, key_path)
+            apps_use_light_theme, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
+            return "clair" if apps_use_light_theme == 1 else "sombre"
+        except Exception:
+            return "clair"  # Par défaut si erreur
+    return "clair"  # Par défaut sur Linux/macOS
 
 # --- Page de questionnaire ---
 class PageQuestionnaire(QWidget):
@@ -38,32 +53,6 @@ class PageQuestionnaire(QWidget):
         btn_valider.clicked.connect(self.verifier_et_passer)
         form_layout.addWidget(btn_valider)
 
-        # Appliquer une belle feuille de style
-        self.setStyleSheet("""
-            QLabel {
-                font-size: 14px;
-                color: #fff;
-                font-weight: bold;
-            }
-            QLineEdit, QDateEdit {
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                padding: 6px;
-                font-size: 14px;
-            }
-            QPushButton {
-                background-color: #007acc;
-                color: white;
-                padding: 10px;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #005999;
-            }
-        """)
-
         # Centrage vertical
         outer_layout = QVBoxLayout()
         outer_layout.addStretch()
@@ -89,8 +78,7 @@ class PageQuestionnaire(QWidget):
             return
         self.switch_callback()
 
-
-# --- Fenêtre principale de l'application (ta classe existante) ---
+# --- Fenêtre principale de l'application ---
 class FenetreAppli(QMainWindow):
     def __init__(self, chemin: str = None):
         super().__init__()
@@ -140,6 +128,9 @@ class FenetreAppli(QMainWindow):
         action_retablir.setShortcut('Ctrl+Y')
         action_retablir.triggered.connect(self.text_edit.redo)
         menu_edition.addAction(action_retablir)
+
+        # Appliquer le thème système automatiquement au lancement
+        self.appliquer_theme_par_defaut()
 
     def get_stylesheet(self, theme: str) -> str:
         if theme == "clair":
@@ -205,6 +196,10 @@ class FenetreAppli(QMainWindow):
     def appliquer_theme_sombre(self):
         self.setStyleSheet(self.get_stylesheet("sombre"))
 
+    def appliquer_theme_par_defaut(self):
+        theme = detecter_theme_systeme()
+        self.setStyleSheet(self.get_stylesheet(theme))
+
     def nouveau(self):
         self.barre_etat.showMessage('Créer un nouveau ....', 2000)
         self.text_edit.clear()
@@ -239,13 +234,6 @@ class AppMultiPages(QStackedWidget):
         self.addWidget(self.fenetre_appli)  # index 1
         self.setCurrentIndex(1)
         self.fenetre_appli.showMaximized()
-        
-    def appliquer_theme_clair(self):
-        QApplication.instance().setStyleSheet(self.get_stylesheet("clair"))
-
-    def appliquer_theme_sombre(self):
-        QApplication.instance().setStyleSheet(self.get_stylesheet("sombre"))
-
 
 # --- Lancement de l'application ---
 if __name__ == "__main__":
