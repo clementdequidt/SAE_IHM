@@ -4,10 +4,10 @@ import json
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout,
     QMessageBox, QTextEdit, QDockWidget, QStackedWidget, QStatusBar, QFileDialog, QDateEdit, QScrollArea, QCheckBox, QListWidget, QListWidgetItem,
-    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QGraphicsTextItem # NOUVEAU: QGraphicsTextItem pour le texte des produits
+    QGraphicsView, QGraphicsScene, QGraphicsPixmapItem, QGraphicsTextItem
 )
 from PyQt6.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QIcon, QDrag, QMouseEvent, QWheelEvent, QPainter, QBrush, QColor, QFont, QDragMoveEvent
-from PyQt6.QtCore import Qt, QDate, QPointF, QRectF, pyqtSignal, QMimeData # NOUVEAU: QMimeData pour le drag & drop
+from PyQt6.QtCore import Qt, QDate, QPointF, QRectF, pyqtSignal, QMimeData
 
 # --- Détection du thème système ---
 def detecter_theme_systeme():
@@ -15,15 +15,13 @@ def detecter_theme_systeme():
         try:
             import winreg
             registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-            # Chemin corrigé pour les thèmes sous Windows - attention, une erreur était présente dans la version précédente
-            # La clé correcte est 'Personalize' et non 'Bordure'
             key_path = r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
             key = winreg.OpenKey(registry, key_path)
             apps_use_light_theme, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
             return "clair" if apps_use_light_theme == 1 else "sombre"
         except Exception:
-            return "clair"  # Par défaut si erreur
-    return "clair"  # Par défaut sur Linux/macOS
+            return "clair"
+    return "clair"
 
 # --- Page de questionnaire ---
 class PageQuestionnaire(QWidget):
@@ -118,7 +116,10 @@ class ChoisirProduits(QWidget):
         self.categories = []
         self.page_courante = 0
         self.categories_par_page = 3
-        self.listes_categorie = {}
+        self.listes_categorie = {} # Contient les QListWidget actuellement affichés
+        
+        # NOUVEAU: Dictionnaire pour stocker toutes les sélections (produit -> est_sélectionné)
+        self.selections_globales = {} 
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -158,6 +159,11 @@ class ChoisirProduits(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Impossible de charger la liste des produits:\n{e}")
             self.produits_par_categorie = {}
+        
+        # NOUVEAU: Initialiser selections_globales avec tous les produits non sélectionnés au départ
+        for categorie, produits in self.produits_par_categorie.items():
+            for produit in produits:
+                self.selections_globales[produit] = False
 
         self.categories = list(self.produits_par_categorie.keys())
         self.page_courante = 0
@@ -195,7 +201,18 @@ class ChoisirProduits(QWidget):
             }
         """)
 
+    def _sauvegarder_selections_courantes(self):
+        """Sauvegarde l'état des QListWidget actuellement affichés dans selections_globales."""
+        for categorie, liste_widget in self.listes_categorie.items():
+            for i in range(liste_widget.count()):
+                item = liste_widget.item(i)
+                self.selections_globales[item.text()] = item.isSelected()
+
     def afficher_page(self):
+        # NOUVEAU: Sauvegarder les sélections AVANT de vider les listes
+        self._sauvegarder_selections_courantes()
+
+        # Nettoyage des widgets précédents
         for i in reversed(range(self.container_layout.count())):
             layout_or_widget = self.container_layout.itemAt(i)
             if layout_or_widget is not None:
@@ -210,7 +227,7 @@ class ChoisirProduits(QWidget):
                     else:
                         self.container_layout.removeItem(layout_or_widget)
 
-        self.listes_categorie = {}
+        self.listes_categorie = {} # Réinitialise pour les nouvelles listes
 
         start = self.page_courante * self.categories_par_page
         end = start + self.categories_par_page
@@ -228,6 +245,9 @@ class ChoisirProduits(QWidget):
             liste_widget.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
             for produit in produits:
                 item = QListWidgetItem(produit)
+                # NOUVEAU: Restaurer la sélection de l'item si elle était sauvegardée
+                if self.selections_globales.get(produit, False): # Par défaut à False si pas trouvé
+                    item.setSelected(True)
                 liste_widget.addItem(item)
             layout_categorie.addWidget(liste_widget)
 
@@ -249,24 +269,37 @@ class ChoisirProduits(QWidget):
                     self._clear_layout(child_layout)
 
     def page_precedente(self):
+        # NOUVEAU: Sauvegarder les sélections avant de changer de page
+        self._sauvegarder_selections_courantes()
         if self.page_courante > 0:
             self.page_courante -= 1
             self.afficher_page()
 
     def page_suivante(self):
+        # NOUVEAU: Sauvegarder les sélections avant de changer de page
+        self._sauvegarder_selections_courantes()
         if (self.page_courante + 1) * self.categories_par_page < len(self.categories):
             self.page_courante += 1
             self.afficher_page()
 
     def valider_selection(self):
+        # NOUVEAU: S'assurer que les sélections de la page actuelle sont sauvegardées avant validation
+        self._sauvegarder_selections_courantes() 
+        
         selection_finale = {}
         total_selectionnes = 0
 
-        for categorie, liste_widget in self.listes_categorie.items():
-            produits_choisis = [item.text() for item in liste_widget.selectedItems()]
-            if produits_choisis:
-                selection_finale[categorie] = produits_choisis
-                total_selectionnes += len(produits_choisis)
+        # Parcourir les sélections_globales pour construire la selection_finale
+        for produit, selected in self.selections_globales.items():
+            if selected:
+                # Retrouver la catégorie du produit pour le classer
+                for categorie, produits_liste in self.produits_par_categorie.items():
+                    if produit in produits_liste:
+                        if categorie not in selection_finale:
+                            selection_finale[categorie] = []
+                        selection_finale[categorie].append(produit)
+                        total_selectionnes += 1
+                        break # Produit trouvé, passer au suivant
 
         if total_selectionnes < 20:
             QMessageBox.warning(
@@ -280,7 +313,6 @@ class ChoisirProduits(QWidget):
         self.close()
         
 class Image(QGraphicsView):
-    # NOUVEAU: Signal pour informer FenetreAppli qu'un produit a été placé
     produit_place_signal = pyqtSignal(str, QPointF) 
 
     def __init__(self, chemin: str):
@@ -304,7 +336,6 @@ class Image(QGraphicsView):
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
-        # NOUVEAU: Accepter les drops
         self.setAcceptDrops(True)
 
         pixmap = QPixmap(chemin)
@@ -347,35 +378,31 @@ class Image(QGraphicsView):
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasText():
-            event.acceptProposedAction() # IMPORTANT : Accepter l'action
+            event.acceptProposedAction()
         else:
             event.ignore()
 
     def dragMoveEvent(self, event: QDragMoveEvent):
         if event.mimeData().hasText():
-            event.acceptProposedAction() # IMPORTANT : Accepter l'action
+            event.acceptProposedAction()
         else:
             event.ignore()
 
     def dropEvent(self, event: QDropEvent):
         if event.mimeData().hasText():
             product_name = event.mimeData().text()
-            scene_pos = self.mapToScene(event.position().toPoint()) # Convertit la position de la vue en position de la scène
+            scene_pos = self.mapToScene(event.position().toPoint())
 
-            # Créer un élément texte sur la scène
             text_item = QGraphicsTextItem(product_name)
-            # Vous pouvez ajuster la police et la couleur pour une meilleure visibilité
             text_item.setDefaultTextColor(QColor("red"))
             text_item.setFont(QFont("Arial", 12, QFont.Weight.Bold))
             
-            # Positionner l'élément texte au centre du point de dépôt
             text_item.setPos(scene_pos.x() - text_item.boundingRect().width() / 2,
                              scene_pos.y() - text_item.boundingRect().height() / 2)
             
             self._scene.addItem(text_item)
             event.acceptProposedAction()
 
-            # Émettre le signal pour informer FenetreAppli de la position du produit
             self.produit_place_signal.emit(product_name, scene_pos)
         else:
             event.ignore()
@@ -385,34 +412,27 @@ class FenetreAppli(QMainWindow):
         super().__init__()
         self.__chemin = chemin
         self.produits_selectionnes = produits_selectionnes if produits_selectionnes is not None else {}
-        # NOUVEAU: Dictionnaire pour stocker les positions des produits sur le plan
         self.positions_produits = {} 
         
         self.setWindowTitle("test_ihm_client")
         screen_geometry = QApplication.primaryScreen().availableGeometry()
         self.setGeometry(screen_geometry)
 
-        # Création de l'image (widget central)
-        self.image_viewer = Image(self.__chemin) # Renomme l'instance de Image
+        self.image_viewer = Image(self.__chemin)
         self.setCentralWidget(self.image_viewer)
-        # NOUVEAU: Connecte le signal de l'image_viewer
         self.image_viewer.produit_place_signal.connect(self.enregistrer_position_produit)
 
-        # dock
-        self.dock = QDockWidget('Produits à placer') # Titre du dock plus approprié
+        self.dock = QDockWidget('Produits à placer')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMaximumWidth(400)
         
-        # NOUVEAU: Utilise QListWidget au lieu de QTextEdit pour le dock
         self.liste_produits_dock = QListWidget() 
         self.dock.setWidget(self.liste_produits_dock)
         
-        # NOUVEAU: Configure le QListWidget pour le drag & drop
         self.liste_produits_dock.setDragEnabled(True)
-        self.liste_produits_dock.setDragDropMode(QListWidget.DragDropMode.DragOnly) # Permet seulement le glisser
+        self.liste_produits_dock.setDragDropMode(QListWidget.DragDropMode.DragOnly)
         self.liste_produits_dock.setDefaultDropAction(Qt.DropAction.MoveAction)
         
-        # NOUVEAU: Affiche les produits dans le dock QListWidget
         self.afficher_produits_dans_dock() 
 
         self.barre_etat = QStatusBar()
@@ -426,30 +446,27 @@ class FenetreAppli(QMainWindow):
 
         menu_fichier.addAction('Nouveau', self.nouveau)
         menu_fichier.addAction('Ouvrir', self.ouvrir)
-        # NOUVEAU: Ajout d'une action pour enregistrer les positions
         menu_fichier.addAction('Enregistrer les positions', self.enregistrer_positions) 
         menu_fichier.addSeparator()
         menu_fichier.addAction('Quitter', self.destroy)
 
     def afficher_produits_dans_dock(self):
         """Affiche les produits sélectionnés dans le QListWidget du dock et les rend glissables."""
-        self.liste_produits_dock.clear() # Vide la liste avant de la remplir
+        self.liste_produits_dock.clear()
         if not self.produits_selectionnes:
             item = QListWidgetItem("Aucun produit sélectionné.")
-            item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled) # Désactive le glisser si pas de produits
+            item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled)
             self.liste_produits_dock.addItem(item)
             return
 
         for categorie, produits in self.produits_selectionnes.items():
-            # Ajouter un élément de catégorie non glissable, mais visible
             category_item = QListWidgetItem(f"--- {categorie} ---")
-            category_item.setFlags(category_item.flags() & ~Qt.ItemFlag.ItemIsDragEnabled) # Empêche le glisser de la catégorie
-            category_item.setForeground(QBrush(QColor("blue"))) # Couleur pour les catégories
+            category_item.setFlags(category_item.flags() & ~Qt.ItemFlag.ItemIsDragEnabled)
+            category_item.setForeground(QBrush(QColor("blue")))
             self.liste_produits_dock.addItem(category_item)
 
             for produit in produits:
                 item = QListWidgetItem(produit)
-                # Important: Rendre l'item glissable
                 item.setFlags(item.flags() | Qt.ItemFlag.ItemIsDragEnabled) 
                 self.liste_produits_dock.addItem(item)
 
@@ -457,7 +474,7 @@ class FenetreAppli(QMainWindow):
         """Reçoit le signal d'un produit placé et enregistre sa position."""
         self.positions_produits[product_name] = {'x': position.x(), 'y': position.y()}
         self.barre_etat.showMessage(f"Produit '{product_name}' placé à ({position.x():.0f}, {position.y():.0f})", 3000)
-        print(f"Positions actuelles: {self.positions_produits}") # Pour debug
+        print(f"Positions actuelles: {self.positions_produits}")
 
     def enregistrer_positions(self):
         """Sauvegarde les positions des produits dans un fichier JSON."""
@@ -470,7 +487,6 @@ class FenetreAppli(QMainWindow):
         if file_path:
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
-                    # Convertir les QPointF en dictionnaires simples pour la sérialisation JSON
                     serializable_positions = {
                         name: {'x': pos['x'], 'y': pos['y']} 
                         for name, pos in self.positions_produits.items()
@@ -482,19 +498,15 @@ class FenetreAppli(QMainWindow):
 
     def nouveau(self):
         self.barre_etat.showMessage('Créer un nouveau ....', 2000)
-        # Logique pour un "nouveau" projet, potentiellement réinitialiser la scène et les produits
-        # Pour l'instant, ça ouvre un fichier, à ajuster si besoin
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(directory = sys.path[0])
         if validation:
             self.__chemin = chemin
-            # Réinitialiser si un nouveau plan est choisi
             self.image_viewer.setPixmap(QPixmap(self.__chemin))
-            self.positions_produits = {} # Efface les anciennes positions
-            self.image_viewer._scene.clear() # Efface les éléments graphiques de la scène
-            self.image_viewer._scene.addItem(self.image_viewer._pixmap_item) # Rajoute l'image de fond
+            self.positions_produits = {}
+            self.image_viewer._scene.clear()
+            self.image_viewer._scene.addItem(self.image_viewer._pixmap_item)
             self.barre_etat.showMessage('Nouveau plan chargé.', 2000)
-
 
     def ouvrir(self):
         self.barre_etat.showMessage('Ouvrir un nouveau....', 2000)
@@ -502,23 +514,17 @@ class FenetreAppli(QMainWindow):
         chemin, validation = boite.getOpenFileName(self, "Ouvrir une image de plan", directory = sys.path[0], filter="Images (*.png *.jpg *.jpeg *.bmp *.gif)")
         if validation:
             self.__chemin = chemin
-            # Note : Pour l'ouverture complète d'un projet, il faudrait aussi charger les positions des produits
-            # qui ont été enregistrées avec ce plan.
             self.image_viewer.setPixmap(QPixmap(self.__chemin))
-            self.positions_produits = {} # Efface les anciennes positions (à charger plus tard)
-            self.image_viewer._scene.clear() # Efface les éléments graphiques de la scène
-            self.image_viewer._scene.addItem(self.image_viewer._pixmap_item) # Rajoute l'image de fond
+            self.positions_produits = {}
+            self.image_viewer._scene.clear()
+            self.image_viewer._scene.addItem(self.image_viewer._pixmap_item)
             self.barre_etat.showMessage(f"Plan chargé: {self.__chemin}", 2000)
 
     def enregistrer(self):
         self.barre_etat.showMessage('Enregistrer....', 2000 )
-        # Cette fonction enregistrerait l'état global du projet (info magasin, produits choisis, positions)
-        # Pour l'instant, elle n'est pas pleinement implémentée pour tout, seulement pour les positions via 'enregistrer_positions'
         QMessageBox.information(self, "Enregistrer le projet", "La fonction d'enregistrement global du projet n'est pas encore implémentée. Utilisez 'Enregistrer les positions' pour les emplacements des produits.")
 
     def affiche_image(self):
-        # Cette méthode n'est plus directement appelée pour créer l'image_viewer
-        # car image_viewer est créé dans __init__ et mis à jour avec setPixmap
         pass 
 
 # --- Gestionnaire de navigation entre pages ---
@@ -549,10 +555,6 @@ class AppMultiPages(QStackedWidget):
         else:
             self.fenetre_appli.produits_selectionnes = produits_selectionnes
             self.fenetre_appli.afficher_produits_dans_dock() 
-            # Si le plan était déjà affiché, il faut aussi effacer les anciens marqueurs de produits
-            # et potentiellement recharger une image propre si nécessaire.
-            # Pour l'instant, on se base sur l'idée que FenetreAppli est nouvelle ou réinitialisée
-            # quand on y arrive via le flux initial.
             
         self.setCurrentIndex(2)
 
