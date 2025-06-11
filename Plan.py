@@ -2,30 +2,38 @@ from Case import Case
 import heapq
 
 class Plan():
+    # OK
     def __init__(self, longueur: int, largeur: int):
         self.__longueur = longueur
         self.__largeur = largeur
         self.__cases = [[Case((i, j)) for i in range(longueur)] for j in range(largeur)]
     
+    # OK
     def getLongueur(self):
         return self.__longueur
     
+    # OK
     def getLargeur(self):
         return self.__largeur
     
+    # OK
     def getCase(self, coord: tuple):
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             return self.__cases[coord[0]][coord[1]]
     
+    # OK
     def setLongueur(self, longueur: int):
         self.__longueur = longueur
         
+    # OK
     def setLargeur(self, largeur: int):
         self.__largeur = largeur
     
+    # OK
     def regenererPlan(self):
         self.__cases = [[Case((i, j)) for i in range(self.__longueur)] for j in range(self.__largeur)]
     
+    # à tester
     def casesVoisines(self, case: Case):
         coord = case.getCoord()
         voisins = []
@@ -36,6 +44,7 @@ class Plan():
                 voisins.append(self.__cases[voisinCoord[0]][voisinCoord[1]])
         return voisins
     
+    # à tester
     def setItemsAccessible(self, coord: tuple):
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             case = self.__cases[coord[0]][coord[1]]
@@ -48,7 +57,10 @@ class Plan():
                         if caseAdj.isRayon():
                             itemsAccessible.extend(caseAdj.getItemsInRayon())
             case.setItemsAccessible(itemsAccessible)
+        else:
+            case.setItemsAccessible([])
     
+    # à tester
     def remplirCase(self, coord: tuple):
         if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
             case = self.__cases[coord[0]][coord[1]]
@@ -62,11 +74,13 @@ class Plan():
             case.setObstacle(input(f"Est-ce que la case {coord} est un obstacle ? (oui/non) ").strip().lower() == 'oui')
             self.setItemsAccessible(coord)
     
+    # à tester
     def remplirPlan(self):
         for i in range(self.__largeur):
             for j in range(self.__longueur):
                 self.remplirCase((i, j))
     
+    # à tester
     def trouverDepart(self):
         for i in range(self.__largeur):
             for j in range(self.__longueur):
@@ -75,6 +89,7 @@ class Plan():
                     return case
         return None
     
+    # à tester
     def trouverCasesPossiblesItem(self, item: str):
         casesPossibles = []
         for i in range(self.__largeur):
@@ -84,6 +99,7 @@ class Plan():
                     casesPossibles.append(case)
         return casesPossibles
     
+    # à revoir car case plus proche du départ != case plus proche d'une autre case ? à tester sinon
     def trouverCasesAVisiter(self, listeCourses: list):
         casesAVisiter = []
         depart = self.trouverDepart()
@@ -98,10 +114,15 @@ class Plan():
                         if distanceCase < distanceMin or distanceMin == 0:
                             distanceMin = distanceCase
                             caseAVisiter = case
-                casesAVisiter.append(case)
+                if caseAVisiter is not None:
+                    casesAVisiter.append(caseAVisiter)
         return casesAVisiter
     
+    # à tester et surement à revoir
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
+        if depart == arrivee:
+            return [depart]
+        
         distances = {(i,j): float('inf') for i in range(self.__largeur) for j in range(self.__longueur)}
         distances[depart] = 0
         predecesseurs = {}
@@ -135,13 +156,13 @@ class Plan():
             courant = predecesseurs[courant]
         chemin.append(depart)
         chemin.reverse()
-        return chemin  
-        
+        return chemin
     
-    def plusCourtCheminListeCourses(self, depart: tuple, listeCourses: list):
+    # à relire
+    def plusCourtCheminListeCourses(self, listeCourses: list):
         cheminTotal = []
         casesAVisiter = self.trouverCasesAVisiter(listeCourses)
-        caseActuelle = self.getCase(depart)
+        caseActuelle = self.trouverDepart()
         
         for case in casesAVisiter:
             chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), case.getCoord())

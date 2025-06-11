@@ -6,6 +6,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QIcon, QAction, QPixmap
 from PyQt6.QtCore import Qt, QDate
 
+<<<<<<< HEAD
+=======
+# --- Page de questionnaire ---
+>>>>>>> bee0d755d64b6d4ba05f7005c655e3ed3abdf433
 class PageQuestionnaire(QWidget):
     def __init__(self, switch_callback):
         super().__init__()

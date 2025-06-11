@@ -1,3 +1,4 @@
+# à implémenter dans la classe Plan
 import json
 import random
 

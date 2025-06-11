@@ -2,6 +2,7 @@ from Plan import Plan
 import datetime as dt
 
 class Magasin():
+    # OK
     def init(self, nomProjet: str, auteurProjet: str, date: dt, nomMagasin: str, adresse: str, longueur: int = 62, largeur: int = 47):
         self.__nomProjet = nomProjet
         self.__auteurProjet = auteurProjet
@@ -10,46 +11,60 @@ class Magasin():
         self.__adresse = adresse
         self.__plan = Plan(longueur, largeur)
 
+    # OK
     def getNomProjet(self):
         return self.__nomProjet
     
+    # OK
     def getAuteurProjet(self):
         return self.__auteurProjet
     
+    # OK
     def getDate(self):
         return self.__date
     
+    # OK
     def getNomMagasin(self):
         return self.__nomMagasin
     
+    # OK
     def getAdresse(self):
         return self.__adresse
     
+    # OK
     def getPlan(self):
         return self.__plan
     
+    # OK
     def setNomProjet(self, nomProjet: str):
         self.__nomProjet = nomProjet
-        
+    
+    # OK
     def setAuteurProjet(self, auteurProjet: str):
         self.__auteurProjet = auteurProjet
-        
+    
+    # OK
     def setDate(self, date: dt):
         self.__date = date
-        
+    
+    # OK
     def setNomMagasin(self, nomMagasin: str):
         self.__nomMagasin = nomMagasin
-        
+    
+    # OK
     def setAdresse(self, adresse: str):
         self.__adresse = adresse
-        
+    
+    # OK
     def setPlan(self, plan: Plan):
         self.__plan = plan
 
+    # OK
     def remplirMagasin(self):
         print("Remplissage du magasin...")
         self.__plan.remplirPlan()
 
+    # à relire et surement à revoir
     def afficher_etat(self):
         print("Etat du magasin")
         for y in range(self.plan.getLargeur()):
