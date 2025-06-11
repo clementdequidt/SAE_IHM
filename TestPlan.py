@@ -58,12 +58,11 @@ class TestPlan(unittest.TestCase):
         chemin = self.plateau.plusCourtCheminCase((0, 0), (2, 2))
         self.assertEqual(chemin, [])
 
-    def test_trouverCasesAVisiter(self):
+    def test_trouverCaseAVisiterItem(self):
         self.plateau.getCase((0, 0)).setDepart(True)
         self.plateau.getCase((2, 2)).setItemsAccessible(['banane'])
-        cases = self.plateau.trouverCasesAVisiter(['banane'])
-        self.assertEqual(len(cases), 1)
-        self.assertEqual(cases[0].getCoord(), (2, 2))
+        case = self.plateau.trouverCaseAVisiterItem(self.plateau.trouverDepart(), 'banane')
+        self.assertEqual(case.getCoord(), (2, 2))
 
     def test_plusCourtCheminListeCourses(self):
         self.plateau.getCase((0, 0)).setDepart(True)
