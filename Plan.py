@@ -179,7 +179,7 @@ class Plan():
         return cheminTotal
     
     def listeCoursesAleatoire(self):
-        with open('C:/Users/basti/Documents/SAE_IHM/Liste de produits-20250526/liste_produits.json', 'r', encoding='utf-8') as f:
+        with open('liste_produits.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         tous_les_produits = []
