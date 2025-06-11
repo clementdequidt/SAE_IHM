@@ -101,7 +101,7 @@ class Plan():
                     casesPossibles.append(case)
         return casesPossibles
     
-    # à revoir car case plus proche du départ != case plus proche d'une autre case ? à tester sinon
+    # OK mais à tester en condition réelle quand même
     def trouverCaseAVisiterItem(self, depart: Case, item: str):
         distanceMin = 0
         caseAVisiter = None
@@ -158,19 +158,19 @@ class Plan():
     # OK mais à tester en condition réelle quand même
     def plusCourtCheminListeCourses(self, listeCourses: list):
         cheminTotal = []
-        casesAVisiter = self.trouverCasesAVisiter(listeCourses)
         caseActuelle = self.trouverDepart()
         
-        for case in casesAVisiter:
-            chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), case.getCoord())
+        for item in listeCourses:
+            caseAVisiter = self.trouverCaseAVisiterItem(caseActuelle, item)
+            chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), caseAVisiter.getCoord())
             if not chemin:
-                print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {case.getCoord()}.")
+                print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {caseAVisiter.getCoord()}.")
                 continue
             if cheminTotal and chemin[0] == cheminTotal[-1]:
                 cheminTotal.extend(chemin[1:])
             else:
                 cheminTotal.extend(chemin)
-            caseActuelle = case
+            caseActuelle = caseAVisiter
         return cheminTotal
     
     # OK
