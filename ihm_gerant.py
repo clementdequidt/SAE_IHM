@@ -2,6 +2,7 @@ import sys
 import platform
 import json
 import os
+import ControlleurGerant
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout,
@@ -27,6 +28,8 @@ def detecter_theme_systeme():
 
 # --- Page de questionnaire ---
 class PageQuestionnaire(QWidget):
+    questionnaire_valide = pyqtSignal(dict)
+    
     def __init__(self, switch_callback):
         super().__init__()
         self.switch_callback = switch_callback
@@ -105,6 +108,7 @@ class PageQuestionnaire(QWidget):
         ]):
             QMessageBox.warning(self, "Champs requis", "Veuillez remplir tous les champs.")
             return
+        self.questionnaire_valide.emit(self.get_questionnaire_data())
         self.switch_callback()
 
     def get_questionnaire_data(self):
@@ -856,6 +860,7 @@ class AppMultiPages(QStackedWidget):
         super().__init__()
 
         self.page_questionnaire = PageQuestionnaire(self.aller_a_choisir_produits)
+        self.controller = ControlleurGerant(self.page_questionnaire)
         self.addWidget(self.page_questionnaire)  # index 0
 
         self.choisir_produits = ChoisirProduits()

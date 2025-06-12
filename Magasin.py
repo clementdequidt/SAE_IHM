@@ -5,7 +5,7 @@ class Magasin():
     """Classe représentant un magasin."""
     
     # OK
-    def init(self, nomProjet: str, auteurProjet: str, date: dt, nomMagasin: str, adresse: str, listeProduitsDispo: list, longueur: int = 62, largeur: int = 47):
+    def __init__(self, nomProjet: str, auteurProjet: str, date: dt, nomMagasin: str, adresse: str, listeProduitsDispo: list, longueur: int = 62, largeur: int = 47):
         """Constructeur qui initialise un objet Magasin et ses attributs.
         
         Args:
