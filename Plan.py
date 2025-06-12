@@ -19,7 +19,7 @@ class Plan():
         """
         self.__longueur = longueur
         self.__largeur = largeur
-        self.__cases = [[Case((i, j)) for i in range(longueur)] for j in range(largeur)]
+        self.__cases = [[Case((i, j)) for j in range(largeur)] for i in range(longueur)]
     
     # OK
     def getLongueur(self):
@@ -49,7 +49,7 @@ class Plan():
         Returns:
             Case: Instance de la classe Case correspondant aux coordonnées spécifiées, ou None si les coordonnées sont hors limites.
         """
-        if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
+        if 0 <= coord[0] < self.__longueur and 0 <= coord[1] < self.__largeur:
             return self.__cases[coord[0]][coord[1]]
         return None
     
@@ -74,7 +74,7 @@ class Plan():
     # OK
     def regenererPlan(self):
         """Regénère le plan en créant une nouvelle matrice de cases."""
-        self.__cases = [[Case((i, j)) for i in range(self.__longueur)] for j in range(self.__largeur)]
+        self.__cases = [[Case((i, j)) for j in range(self.__longueur)] for i in range(self.__largeur)]
     
     # OK
     def casesVoisines(self, case: Case):
@@ -102,7 +102,7 @@ class Plan():
         Args:
             coord (tuple): Coordonnées de la case sous forme de tuple (x, y).
         """
-        if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
+        if 0 <= coord[0] < self.__longueur and 0 <= coord[1] < self.__largeur:
             case = self.__cases[coord[0]][coord[1]]
             if not case.isObstacle():
                 itemsAccessible = []
@@ -123,7 +123,7 @@ class Plan():
         Args:
             coord (tuple): Coordonnées de la case sous forme de tuple (x, y).
         """
-        if 0 <= coord[0] < self.__largeur and 0 <= coord[1] < self.__longueur:
+        if 0 <= coord[0] < self.__longueur and 0 <= coord[1] < self.__largeur:
             case = self.__cases[coord[0]][coord[1]]
             case.setDepart(input(f"Est-ce que la case {coord} est un point de départ ? (oui/non) ").strip().lower() == 'oui')
             case.setCaisse(input(f"Est-ce que la case {coord} est une caisse ? (oui/non) ").strip().lower() == 'oui')
@@ -138,8 +138,8 @@ class Plan():
     # OK
     def remplirPlan(self):
         """Remplit toutes les cases du plan."""
-        for i in range(self.__largeur):
-            for j in range(self.__longueur):
+        for i in range(self.__longueur):
+            for j in range(self.__largeur):
                 self.remplirCase((i, j))
     
     # OK
@@ -149,8 +149,8 @@ class Plan():
         Returns:
             Case: Instance de la classe Case qui est le point de départ, ou None si aucun point de départ n'est trouvé.
         """
-        for i in range(self.__largeur):
-            for j in range(self.__longueur):
+        for i in range(self.__longueur):
+            for j in range(self.__largeur):
                 case = self.__cases[i][j]
                 if case.isDepart():
                     return case
@@ -167,8 +167,8 @@ class Plan():
             list: Liste des cases accessibles depuis lesquels l'item spécifié est accessible.
         """
         casesPossibles = []
-        for i in range(self.__largeur):
-            for j in range(self.__longueur):
+        for i in range(self.__longueur):
+            for j in range(self.__largeur):
                 case = self.__cases[i][j]
                 if not case.isObstacle() and item in case.getItemsAccessible():
                     casesPossibles.append(case)
@@ -206,8 +206,8 @@ class Plan():
             list: Liste des cases qui sont des caisses.
         """
         caissesPossibles = []
-        for i in range(self.__largeur):
-            for j in range(self.__longueur):
+        for i in range(self.__longueur):
+            for j in range(self.__largeur):
                 case = self.__cases[i][j]
                 if case.isCaisse():
                     caissesPossibles.append(case)
@@ -234,6 +234,7 @@ class Plan():
                     caisseAVisiter = caisse
         if caisseAVisiter is not None:
             return caisseAVisiter
+        return None
     
     # OK mais à tester en condition réelle quand même
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
@@ -284,7 +285,7 @@ class Plan():
         chemin.reverse()
         return chemin
     
-    # A modifier pour renvoyer les coordonnées des cases ou il faut s'arrêter pour prendre les items en plus du chemin final
+    # OK mais à tester en condition réelle quand même
     def plusCourtCheminListeCourses(self, listeCourses: list):
         """Trouve le plus court chemin pour collecter les items d'une liste de courses à partir du point de départ jusqu'à la caisse.
         
@@ -293,12 +294,18 @@ class Plan():
         
         Returns:
             list: Liste des coordonnées du chemin le plus court pour collecter les items de la liste de courses, en passant par la caisse à la fin.
+            dict: Dictionnaire des positions des items collectés, avec les coordonnées comme clés et les listes d'items comme valeurs.
         """
         cheminTotal = []
+        positionsItems = {}
         caseActuelle = self.trouverDepart()
         
         for item in listeCourses:
             caseAVisiter = self.trouverCaseAVisiterItem(caseActuelle, item)
+            if caseAVisiter.getCoord() not in positionsItems:
+                positionsItems[caseAVisiter.getCoord()] = [item]
+            else:
+                positionsItems[caseAVisiter.getCoord()].append(item)
             chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), caseAVisiter.getCoord())
             if not chemin:
                 print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {caseAVisiter.getCoord()}.")
@@ -310,6 +317,9 @@ class Plan():
             caseActuelle = caseAVisiter
 
         caseAVisiter = self.trouverCaisseAVisiter(caseActuelle)
+        if caseAVisiter is None:
+            print("Aucune caisse trouvée.")
+            return cheminTotal, positionsItems
         chemin = self.plusCourtCheminCase(caseActuelle.getCoord(), caseAVisiter.getCoord())
         if not chemin:
             print(f"Aucun chemin trouvé de {caseActuelle.getCoord()} à {caseAVisiter.getCoord()}.")
@@ -318,7 +328,7 @@ class Plan():
         else:
             cheminTotal.extend(chemin)
 
-        return cheminTotal
+        return cheminTotal, positionsItems
     
     # OK
     def listeCoursesAleatoire(self):
