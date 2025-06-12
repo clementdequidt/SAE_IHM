@@ -1,107 +1,108 @@
-# MVC_MODEL.py
+# MVC_MODELE.py
 import json
 import os
+import Magasin # Assuming Magasin is a relevant module, keeping its name as is unless specified
 from collections import defaultdict
 
-class StoreModel:
+class ModeleMagasin:
     def __init__(self):
-        self._store_info = {
+        self._infos_magasin = {
             "nom_magasin": "Aucun plan chargé",
             "auteur": "N/A",
             "adresse_magasin": "N/A"
         }
-        self._map_image_path = None
-        self._available_products = defaultdict(list) # Category -> [product names]
-        self._product_positions = {} # Product name -> {'x': float, 'y': float}
-        self._shopping_list = [] # List of product names
+        self._chemin_image_carte = None
+        self._produits_disponibles = defaultdict(list) # Catégorie -> [noms des produits]
+        self._positions_produits = {} # Nom du produit -> {'x': float, 'y': float}
+        self._liste_courses = [] # Liste des noms de produits
 
-    # --- Properties to access data ---
+    # --- Propriétés pour accéder aux données ---
     @property
-    def store_info(self):
-        return self._store_info
-
-    @property
-    def map_image_path(self):
-        return self._map_image_path
+    def infos_magasin(self):
+        return self._infos_magasin
 
     @property
-    def available_products(self):
-        return self._available_products
+    def chemin_image_carte(self):
+        return self._chemin_image_carte
 
     @property
-    def product_positions(self):
-        return self._product_positions
+    def produits_disponibles(self):
+        return self._produits_disponibles
 
     @property
-    def shopping_list(self):
-        return self._shopping_list[:] # Return a copy to prevent external modification
+    def positions_produits(self):
+        return self._positions_produits
 
-    # --- Data Loading / Saving ---
-    def load_store_plan(self, file_path: str):
+    @property
+    def liste_courses(self):
+        return self._liste_courses[:] # Retourne une copie pour éviter les modifications externes
+
+    # --- Chargement / Enregistrement des données ---
+    def charger_plan_magasin(self, chemin_fichier: str):
         """
-        Loads store plan data from a JSON file.
-        Returns (success: bool, message: str)
+        Charge les données du plan du magasin à partir d'un fichier JSON.
+        Retourne (succès: bool, message: str)
         """
-        if not file_path:
-            return False, "Opening cancelled."
+        if not chemin_fichier:
+            return False, "Ouverture annulée."
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                project_data = json.load(f)
+            with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                donnees_projet = json.load(f)
 
-            # Update store info
-            self._store_info = project_data.get("questionnaire_info", {})
+            # Mettre à jour les informations du magasin
+            self._infos_magasin = donnees_projet.get("questionnaire_info", {})
             
-            # Update map image path
-            image_path = project_data.get("chemin_image_plan")
-            if not os.path.exists(image_path):
-                return False, f"Map image '{image_path}' not found. Please check the path or load another plan."
-            self._map_image_path = image_path
+            # Mettre à jour le chemin de l'image de la carte
+            chemin_image = donnees_projet.get("chemin_image_plan")
+            if not os.path.exists(chemin_image):
+                return False, f"Image de la carte '{chemin_image}' introuvable. Veuillez vérifier le chemin ou charger un autre plan."
+            self._chemin_image_carte = chemin_image
 
-            # Update available products
-            self._available_products = defaultdict(list, project_data.get("produits_selectionnes", {}))
+            # Mettre à jour les produits disponibles
+            self._produits_disponibles = defaultdict(list, donnees_projet.get("produits_selectionnes", {}))
 
-            # Update product positions
-            self._product_positions = project_data.get("positions_produits_finales", {})
+            # Mettre à jour les positions des produits
+            self._positions_produits = donnees_projet.get("positions_produits_finales", {})
             
-            # Clear shopping list when a new store plan is loaded
-            self._shopping_list.clear()
+            # Effacer la liste de courses lorsqu'un nouveau plan de magasin est chargé
+            self._liste_courses.clear()
 
-            return True, f"Store plan loaded successfully from {file_path}"
+            return True, f"Plan du magasin chargé avec succès depuis {chemin_fichier}"
 
         except json.JSONDecodeError:
-            return False, "Selected file is not a valid JSON file."
+            return False, "Le fichier sélectionné n'est pas un fichier JSON valide."
         except Exception as e:
-            return False, f"Failed to load store plan: {e}"
+            return False, f"Échec du chargement du plan du magasin : {e}"
 
-    def add_product_to_shopping_list(self, product_name: str):
-        """Adds a product to the shopping list."""
-        self._shopping_list.append(product_name)
+    def ajouterProduitAListeCourses(self, nom_produit: str):
+        """Ajoute un produit à la liste de courses."""
+        self._liste_courses.append(nom_produit)
 
-    def remove_products_from_shopping_list(self, product_names: list[str]):
-        """Removes specified products from the shopping list.
-        If multiple instances of the same product exist, it removes one instance per name provided.
+    def retirerProduitsDeListeCourses(self, noms_produits: list[str]):
+        """Supprime les produits spécifiés de la liste de courses.
+        Si plusieurs instances du même produit existent, une instance par nom fourni est supprimée.
         """
-        for product_name in product_names:
-            if product_name in self._shopping_list:
-                self._shopping_list.remove(product_name)
+        for nom_produit in noms_produits:
+            if nom_produit in self._liste_courses:
+                self._liste_courses.remove(nom_produit)
 
-    def clear_shopping_list(self):
-        """Clears all products from the shopping list."""
-        self._shopping_list.clear()
+    def effacerListeCourses(self):
+        """Efface tous les produits de la liste de courses."""
+        self._liste_courses.clear()
 
-    def save_shopping_list(self, file_path: str):
+    def enregistrerListeCourses(self, chemin_fichier: str):
         """
-        Saves the current shopping list to a text file.
-        Returns (success: bool, message: str)
+        Enregistre la liste de courses actuelle dans un fichier texte.
+        Retourne (succès: bool, message: str)
         """
-        if not self._shopping_list:
-            return False, "Shopping list is empty and cannot be saved."
+        if not self._liste_courses:
+            return False, "La liste de courses est vide et ne peut pas être enregistrée."
 
         try:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                for product in self._shopping_list:
-                    f.write(product + '\n')
-            return True, f"Shopping list saved to {file_path}"
+            with open(chemin_fichier, 'w', encoding='utf-8') as f:
+                for produit in self._liste_courses:
+                    f.write(produit + '\n')
+            return True, f"Liste de courses enregistrée dans {chemin_fichier}"
         except Exception as e:
-            return False, f"Failed to save shopping list: {e}"
+            return False, f"Échec de l'enregistrement de la liste de courses : {e}"

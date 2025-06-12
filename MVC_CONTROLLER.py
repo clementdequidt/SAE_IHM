@@ -1,128 +1,128 @@
-# MVC_CONTROLLER.py
+# MVC_CONTROLEUR.py
 import sys
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QPixmap
-from MVC_MODEL import StoreModel # Assuming model is in MVC_MODEL.py
-from MVC_VIEW import FenetreAppliView # Assuming view is in MVC_VIEW.py
+from MVC_MODEL import ModeleMagasin # Correctement importé
+from MVC_VIEW import FenetreAppliVue # Correctement importé
 
-class StoreController:
-    def __init__(self, model: StoreModel, view: FenetreAppliView):
-        self._model = model
-        self._view = view
-        self._connect_signals()
-        self._update_view_from_model() # Initial view update
+class ControleurMagasin:
+    def __init__(self, modele: ModeleMagasin, vue: FenetreAppliVue):
+        self._modele = modele
+        self._vue = vue
+        self.connecterSignaux()
+        self.mettreAJourVueDepuisModele() # Mise à jour initiale de la vue
 
-    def _connect_signals(self):
-        """Connects UI signals to controller slots."""
-        self._view.open_plan_action.triggered.connect(self.handle_open_store_plan)
-        self._view.quit_action.triggered.connect(QApplication.instance().quit)
-        self._view.action_toggle_dock.triggered.connect(self.handle_toggle_product_list_dock)
-        self._view.add_to_list_btn.clicked.connect(self.handle_add_selected_to_shopping_list)
-        self._view.remove_from_list_btn.clicked.connect(self.handle_remove_selected_from_shopping_list)
-        self._view.clear_list_btn.clicked.connect(self.handle_clear_shopping_list)
-        self._view.save_list_btn.clicked.connect(self.handle_save_shopping_list)
+    def connecterSignaux(self):
+        """Connecte les signaux de l'interface utilisateur aux slots du contrôleur."""
+        self._vue.action_ouvrir_plan.triggered.connect(self.gererOuvrirPlanMagasin)
+        self._vue.action_quitter.triggered.connect(QApplication.instance().quit)
+        self._vue.action_basculer_dock.triggered.connect(self.gererBasculerDockListeProduits)
+        self._vue.bouton_ajouter_liste.clicked.connect(self.gererAjouterSelectionAListeCourses)
+        self._vue.bouton_retirer_liste.clicked.connect(self.gererRetirerSelectionDeListeCourses)
+        self._vue.bouton_effacer_liste.clicked.connect(self.gererEffacerListeCourses)
+        self._vue.bouton_enregistrer_liste.clicked.connect(self.gererEnregistrerListeCourses)
 
-    def _update_view_from_model(self):
-        """Updates all parts of the view based on the current model state."""
-        self._view.update_store_info(self._model.store_info)
+    def mettreAJourVueDepuisModele(self):
+        """Met à jour toutes les parties de la vue en fonction de l'état actuel du modèle."""
+        self._vue.mettreAJourInfosMagasin(self._modele.infos_magasin) # Corrected
         
-        if self._model.map_image_path:
-            self._view.display_map(QPixmap(self._model.map_image_path))
+        if self._modele.chemin_image_carte: # Corrected
+            self._vue.afficherCarte(QPixmap(self._modele.chemin_image_carte)) # Corrected
         else:
-            # Clear map if no image is set (e.g., after initial load or error)
-            self._view.image_viewer.set_map_pixmap(QPixmap()) 
+            # Effacer la carte si aucune image n'est définie (par exemple, après le chargement initial ou une erreur)
+            self._vue.visionneuse_image.definirPixmapCarte(QPixmap()) 
 
-        self._view.display_available_products(self._model.available_products)
-        self._view.display_product_positions_on_map(self._model.product_positions)
-        self._view.update_shopping_list_display(self._model.shopping_list)
+        self._vue.afficherProduitsDisponibles(self._modele.produits_disponibles) # Corrected
+        self._vue.afficherPositionsProduitsSurCarte(self._modele.positions_produits) # Corrected
+        self._vue.mettreAJourAffichageListeCourses(self._modele.liste_courses) # Corrected
 
-    # --- Handlers for UI actions (Controller's role) ---
-    def handle_open_store_plan(self):
-        """Handles the action to open a store plan."""
-        self._view.show_status_message('Opening store plan...', 2000)
-        file_path = self._view.get_open_file_name(
-            "Open Saved Store Plan",
-            "Store Files (*.json)"
+    # --- Gestionnaires des actions de l'interface utilisateur (rôle du contrôleur) ---
+    def gererOuvrirPlanMagasin(self):
+        """Gère l'action d'ouvrir un plan de magasin."""
+        self._vue.afficherMessageStatut('Ouverture du plan du magasin...', 2000)
+        chemin_fichier = self._vue.obtenirNomFichierOuvrir(
+            "Ouvrir un plan de magasin sauvegardé",
+            "Fichiers de magasin (*.json)"
         )
-        if file_path:
-            success, message = self._model.load_store_plan(file_path)
-            if success:
-                self._update_view_from_model()
-                self._view.show_status_message(message, 3000)
+        if chemin_fichier:
+            succes, message = self._modele.charger_plan_magasin(chemin_fichier) # Corrected
+            if succes:
+                self.mettreAJourVueDepuisModele()
+                self._vue.afficherMessageStatut(message, 3000)
             else:
-                self._view.show_critical_message("File Error", message)
-                self._view.show_status_message('Failed to load store plan.', 2000)
+                self._vue.afficherMessageCritique("Erreur de fichier", message)
+                self._vue.afficherMessageStatut('Échec du chargement du plan du magasin.', 2000)
         else:
-            self._view.show_status_message('Store plan opening cancelled.', 2000)
+            self._vue.afficherMessageStatut('Ouverture du plan du magasin annulée.', 2000)
 
-    def handle_toggle_product_list_dock(self):
-        """Handles toggling the visibility of the product list dock."""
-        is_visible = self._view.available_products_dock.isVisible()
-        self._view.toggle_product_list_dock_visibility(not is_visible)
-        if not is_visible:
-            self._view.show_status_message("Product panel displayed.", 2000)
+    def gererBasculerDockListeProduits(self):
+        """Gère le basculement de la visibilité du dock de la liste de produits."""
+        est_visible = self._vue.dock_produits_disponibles.isVisible()
+        self._vue.basculerVisibiliteDockListeProduits(not est_visible)
+        if not est_visible:
+            self._vue.afficherMessageStatut("Panneau des produits affiché.", 2000)
         else:
-            self._view.show_status_message("Product panel hidden.", 2000)
+            self._vue.afficherMessageStatut("Panneau des produits masqué.", 2000)
 
-    def handle_add_selected_to_shopping_list(self):
-        """Adds selected items from available products to the shopping list."""
-        selected_items = self._view.available_products_list_widget.selectedItems()
+    def gererAjouterSelectionAListeCourses(self):
+        """Ajoute les éléments sélectionnés parmi les produits disponibles à la liste de courses."""
+        selected_items = self._vue.liste_widget_produits_disponibles.selectedItems()
         if not selected_items:
-            self._view.show_info_message("Empty Selection", "Please select at least one product to add.")
+            self._vue.afficherMessageInfo("Sélection vide", "Veuillez sélectionner au moins un produit à ajouter.")
             return
 
-        added_count = 0
+        nombre_ajoutes = 0
         for item in selected_items:
-            product_name = item.text()
-            if not product_name.startswith("---"): # Avoid adding category headers
-                self._model.add_product_to_shopping_list(product_name)
-                added_count += 1
+            nom_produit = item.text()
+            if not nom_produit.startswith("---"): # Éviter d'ajouter les en-têtes de catégorie
+                self._modele.ajouterProduitAListeCourses(nom_produit) # Corrected
+                nombre_ajoutes += 1
         
-        self._view.update_shopping_list_display(self._model.shopping_list)
-        if added_count > 0:
-            self._view.show_status_message(f"{added_count} products added to shopping list.", 2000)
+        self._vue.mettreAJourAffichageListeCourses(self._modele.liste_courses) # Corrected
+        if nombre_ajoutes > 0:
+            self._vue.afficherMessageStatut(f"{nombre_ajoutes} produits ajoutés à la liste de courses.", 2000)
         else:
-            self._view.show_status_message("No products added to shopping list.", 2000)
+            self._vue.afficherMessageStatut("Aucun produit ajouté à la liste de courses.", 2000)
 
 
-    def handle_remove_selected_from_shopping_list(self):
-        """Removes selected items from the shopping list."""
-        selected_items = self._view.shopping_list_widget.selectedItems()
-        if not selected_items:
-            self._view.show_info_message("Empty Selection", "Please select at least one product to remove.")
+    def gererRetirerSelectionDeListeCourses(self):
+        """Supprime les éléments sélectionnés de la liste de courses."""
+        elements_selectionnes = self._vue.liste_widget_courses.selectedItems()
+        if not elements_selectionnes:
+            self._vue.afficherMessageInfo("Sélection vide", "Veuillez sélectionner au moins un produit à retirer.")
             return
         
-        products_to_remove = [item.text() for item in selected_items]
-        self._model.remove_products_from_shopping_list(products_to_remove)
-        self._view.update_shopping_list_display(self._model.shopping_list)
-        self._view.show_status_message(f"{len(selected_items)} products removed from shopping list.", 2000)
+        produits_a_retirer = [item.text() for item in elements_selectionnes]
+        self._modele.retirerProduitsDeListeCourses(produits_a_retirer) # Corrected
+        self._vue.mettreAJourAffichageListeCourses(self._modele.liste_courses) # Corrected
+        self._vue.afficherMessageStatut(f"{len(elements_selectionnes)} produits retirés de la liste de courses.", 2000)
 
-    def handle_clear_shopping_list(self):
-        """Clears all items from the shopping list."""
-        if not self._model.shopping_list:
-            self._view.show_info_message("Empty List", "The shopping list is already empty.")
+    def gererEffacerListeCourses(self):
+        """Efface tous les éléments de la liste de courses."""
+        if not self._modele.liste_courses: # Corrected
+            self._vue.afficherMessageInfo("Liste vide", "La liste de courses est déjà vide.")
             return
 
-        if self._view.ask_yes_no_question('Clear List', "Are you sure you want to clear the entire shopping list?"):
-            self._model.clear_shopping_list()
-            self._view.update_shopping_list_display(self._model.shopping_list)
-            self._view.show_status_message("Shopping list cleared.", 2000)
+        if self._vue.poserQuestionOuiNon('Effacer la liste', "Êtes-vous sûr de vouloir effacer toute la liste de courses ?"):
+            self._modele.effacerListeCourses() # Corrected
+            self._vue.mettreAJourAffichageListeCourses(self._modele.liste_courses) # Corrected
+            self._vue.afficherMessageStatut("Liste de courses effacée.", 2000)
 
-    def handle_save_shopping_list(self):
-        """Saves the current shopping list to a text file."""
-        if not self._model.shopping_list:
-            self._view.show_info_message("Empty List", "The shopping list is empty and cannot be saved.")
+    def gererEnregistrerListeCourses(self):
+        """Enregistre la liste de courses actuelle dans un fichier texte."""
+        if not self._modele.liste_courses: # Corrected
+            self._vue.afficherMessageInfo("Liste vide", "La liste de courses est vide et ne peut pas être enregistrée.")
             return
 
-        file_path = self._view.get_save_file_name(
-            "Save Shopping List",
-            "my_shopping_list.txt",
-            "Text Files (*.txt);;All Files (*)"
+        chemin_fichier = self._vue.obtenirNomFichierEnregistrer(
+            "Enregistrer la liste de courses",
+            "ma_liste_courses.txt",
+            "Fichiers texte (*.txt);;Tous les fichiers (*)"
         )
-        if file_path:
-            success, message = self._model.save_shopping_list(file_path)
-            if success:
-                self._view.show_status_message(message, 3000)
-                self._view.show_info_message("Save Successful", f"Your shopping list has been saved to:\n{file_path}")
+        if chemin_fichier:
+            succes, message = self._modele.enregistrerListeCourses(chemin_fichier) # Corrected
+            if succes:
+                self._vue.afficherMessageStatut(message, 3000)
+                self._vue.afficherMessageInfo("Enregistrement réussi", f"Votre liste de courses a été enregistrée à :\n{chemin_fichier}")
             else:
-                self._view.show_critical_message("Save Error", message)
+                self._vue.afficherMessageCritique("Erreur d'enregistrement", message)

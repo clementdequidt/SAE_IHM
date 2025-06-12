@@ -10,20 +10,20 @@ from PyQt6.QtGui import QPixmap, QWheelEvent, QPainter, QFont, QColor
 from PyQt6.QtCore import Qt, QPointF, QRectF, QCoreApplication
 
 
-# --- Image Widget (QGraphicsView for displaying map and products) ---
-class ImageView(QGraphicsView):
+# --- Widget d'Affichage d'Image (QGraphicsView pour afficher la carte et les produits) ---
+class VueImage(QGraphicsView):
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self._zoom = 0
-        self._empty = True
+        self._est_vide = True
         self._scene = QGraphicsScene(self)
         self.setScene(self._scene)
 
-        self._pixmap_item = QGraphicsPixmapItem()
-        self._scene.addItem(self._pixmap_item)
+        self._element_pixmap = QGraphicsPixmapItem()
+        self._scene.addItem(self._element_pixmap)
 
-        self._product_text_items = {} # To store QGraphicsTextItem for each product
+        self._elements_texte_produit = {} # Pour stocker les QGraphicsTextItem pour chaque produit
 
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
@@ -35,59 +35,59 @@ class ImageView(QGraphicsView):
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
-    def set_map_pixmap(self, pixmap: QPixmap):
-        """Sets the background pixmap for the scene."""
+    def definirPixmapCarte(self, pixmap: QPixmap):
+        """Définit le pixmap d'arrière-plan pour la scène."""
         self._zoom = 0
-        self._pixmap_item.setPixmap(pixmap)
+        self._element_pixmap.setPixmap(pixmap)
         self._scene.setSceneRect(QRectF(pixmap.rect()))
         self.fitInView(self._scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
-        self._empty = False
-        self._pixmap_item.setZValue(0) # Ensure pixmap is at the bottom Z-value
+        self._est_vide = False
+        self._element_pixmap.setZValue(0) # S'assurer que le pixmap est en bas de la valeur Z
 
-    def place_product_label(self, product_name: str, x: float, y: float):
+    def placerEtiquetteProduit(self, nom_produit: str, x: float, y: float):
         """
-        Places a product label on the map at the given scene coordinates.
-        Removes existing label for the same product if present.
+        Place une étiquette de produit sur la carte aux coordonnées de scène données.
+        Supprime l'étiquette existante pour le même produit si présente.
         """
-        # Remove existing label for this product if it's already on the map
-        if product_name in self._product_text_items:
-            self._scene.removeItem(self._product_text_items[product_name])
-            del self._product_text_items[product_name]
+        # Supprimer l'étiquette existante pour ce produit si elle est déjà sur la carte
+        if nom_produit in self._elements_texte_produit:
+            self._scene.removeItem(self._elements_texte_produit[nom_produit])
+            del self._elements_texte_produit[nom_produit]
 
-        # Create new text item for the product
-        text_item = self._scene.addText(product_name)
-        text_item.setDefaultTextColor(QColor("red")) # Products will be red for clients
-        text_item.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+        # Créer un nouvel élément de texte pour le produit
+        element_texte = self._scene.addText(nom_produit)
+        element_texte.setDefaultTextColor(QColor("red")) # Les produits seront rouges pour les clients
+        element_texte.setFont(QFont("Arial", 12, QFont.Weight.Bold))
 
-        # Position the text item so its center is at (x, y)
-        text_item.setPos(x - text_item.boundingRect().width() / 2,
-                         y - text_item.boundingRect().height() / 2)
+        # Positionner l'élément de texte de manière à ce que son centre soit à (x, y)
+        element_texte.setPos(x - element_texte.boundingRect().width() / 2,
+                             y - element_texte.boundingRect().height() / 2)
 
-        text_item.setZValue(1) # Ensure product labels are above the map
-        self._product_text_items[product_name] = text_item
+        element_texte.setZValue(1) # S'assurer que les étiquettes de produit sont au-dessus de la carte
+        self._elements_texte_produit[nom_produit] = element_texte
 
-    def clear_all_product_labels(self):
-        """Removes all product labels currently displayed on the map."""
-        for item in list(self._product_text_items.values()):
+    def effacerToutesEtiquettesProduit(self):
+        """Supprime toutes les étiquettes de produit actuellement affichées sur la carte."""
+        for item in list(self._elements_texte_produit.values()):
             self._scene.removeItem(item)
-        self._product_text_items.clear()
+        self._elements_texte_produit.clear()
 
     def wheelEvent(self, event: QWheelEvent):
-        """Handles mouse wheel events for zooming."""
-        if self._empty:
+        """Gère les événements de la molette de la souris pour le zoom."""
+        if self._est_vide:
             return
 
-        zoom_in_factor = 1.25
-        zoom_out_factor = 1 / zoom_in_factor
+        facteur_zoom_avant = 1.25
+        facteur_zoom_arriere = 1 / facteur_zoom_avant
 
         if event.angleDelta().y() > 0:
-            zoom_factor = zoom_in_factor
+            facteur_zoom = facteur_zoom_avant
             self._zoom += 1
         else:
-            zoom_factor = zoom_out_factor
+            facteur_zoom = facteur_zoom_arriere
             self._zoom -= 1
 
-        # Prevent excessive zooming
+        # Empêcher le zoom excessif
         if self._zoom < -10:
             self._zoom = -10
             return
@@ -95,125 +95,125 @@ class ImageView(QGraphicsView):
             self._zoom = 30
             return
 
-        self.scale(zoom_factor, zoom_factor)
+        self.scale(facteur_zoom, facteur_zoom)
 
 
-# --- Main Application Window ---
-class FenetreAppliView(QMainWindow):
+# --- Fenêtre principale de l'application ---
+class FenetreAppliVue(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Application Client de Magasin")
-        screen_geometry = QApplication.primaryScreen().availableGeometry()
-        self.setGeometry(screen_geometry)
+        geometrie_ecran = QApplication.primaryScreen().availableGeometry()
+        self.setGeometry(geometrie_ecran)
 
-        self._setup_ui()
-        self._apply_styles()
+        self.configurerUI()
+        self.appliquerStyles()
         self.showMaximized()
 
-    def _setup_ui(self):
-        # --- Top Bar for Store Info ---
-        self.top_bar_toolbar = QToolBar("Informations du Magasin")
-        self.top_bar_toolbar.setMovable(False)
-        self.top_bar_toolbar.toggleViewAction().setVisible(False)
+    def configurerUI(self):
+        # --- Barre supérieure pour les informations du magasin ---
+        self.barre_superieure_toolbar = QToolBar("Informations du Magasin")
+        self.barre_superieure_toolbar.setMovable(False)
+        self.barre_superieure_toolbar.toggleViewAction().setVisible(False)
         
-        self.top_bar_widget = QWidget()
-        self.top_bar_layout = QHBoxLayout(self.top_bar_widget)
-        self.top_bar_widget.setFixedHeight(90)
-        self.top_bar_widget.setStyleSheet("background-color: #f0f0f0;")
+        self.widget_barre_superieure = QWidget()
+        self.layout_barre_superieure = QHBoxLayout(self.widget_barre_superieure)
+        self.widget_barre_superieure.setFixedHeight(90)
+        self.widget_barre_superieure.setStyleSheet("background-color: #f0f0f0;")
 
-        self.info_stack_layout = QVBoxLayout()
-        self.info_stack_layout.setContentsMargins(0, 0, 0, 0)
-        self.info_stack_layout.setSpacing(2)
+        self.layout_pile_info = QVBoxLayout()
+        self.layout_pile_info.setContentsMargins(0, 0, 0, 0)
+        self.layout_pile_info.setSpacing(2)
 
-        self.store_name_label = QLabel("Magasin : Aucun plan chargé")
-        self.store_name_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #005999;")
-        self.store_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.store_name_label)
+        self.etiquette_nom_magasin = QLabel("Magasin : Aucun plan chargé")
+        self.etiquette_nom_magasin.setStyleSheet("font-size: 20px; font-weight: bold; color: #005999;")
+        self.etiquette_nom_magasin.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout_pile_info.addWidget(self.etiquette_nom_magasin)
 
-        self.gerant_name_label = QLabel("Gérant : N/A")
-        self.gerant_name_label.setStyleSheet("font-size: 14px; color: #333;")
-        self.gerant_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.gerant_name_label)
+        self.etiquette_nom_gerant = QLabel("Gérant : N/A")
+        self.etiquette_nom_gerant.setStyleSheet("font-size: 14px; color: #333;")
+        self.etiquette_nom_gerant.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout_pile_info.addWidget(self.etiquette_nom_gerant)
 
-        self.store_address_label = QLabel("Adresse : N/A")
-        self.store_address_label.setStyleSheet("font-size: 14px; color: #333;")
-        self.store_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.store_address_label)
+        self.etiquette_adresse_magasin = QLabel("Adresse : N/A")
+        self.etiquette_adresse_magasin.setStyleSheet("font-size: 14px; color: #333;")
+        self.etiquette_adresse_magasin.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout_pile_info.addWidget(self.etiquette_adresse_magasin)
 
-        self.top_bar_layout.addStretch(1)
-        self.top_bar_layout.addLayout(self.info_stack_layout)
-        self.top_bar_layout.addStretch(1)
+        self.layout_barre_superieure.addStretch(1)
+        self.layout_barre_superieure.addLayout(self.layout_pile_info)
+        self.layout_barre_superieure.addStretch(1)
         
-        self.top_bar_toolbar.addWidget(self.top_bar_widget)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.top_bar_toolbar)
+        self.barre_superieure_toolbar.addWidget(self.widget_barre_superieure)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.barre_superieure_toolbar)
 
-        # --- Main content: Image Viewer ---
-        self.image_viewer = ImageView()
-        self.setCentralWidget(self.image_viewer)
+        # --- Contenu principal : Visionneuse d'images ---
+        self.visionneuse_image = VueImage()
+        self.setCentralWidget(self.visionneuse_image)
 
-        # --- Docks for Product List and Shopping List ---
-        self.available_products_dock = QDockWidget('Produits Disponibles')
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.available_products_dock)
-        self.available_products_dock.setMaximumWidth(400)
+        # --- Docks pour la liste de produits et la liste de courses ---
+        self.dock_produits_disponibles = QDockWidget('Produits Disponibles')
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock_produits_disponibles)
+        self.dock_produits_disponibles.setMaximumWidth(400)
 
-        self.available_products_list_widget = QListWidget()
-        self.available_products_list_widget.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
+        self.liste_widget_produits_disponibles = QListWidget()
+        self.liste_widget_produits_disponibles.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
         
-        # Shopping list widget and controls
-        shopping_list_container = QWidget()
-        shopping_list_layout = QVBoxLayout(shopping_list_container)
+        # Widget et contrôles de la liste de courses
+        conteneur_liste_courses = QWidget()
+        layout_liste_courses = QVBoxLayout(conteneur_liste_courses)
         
-        available_label = QLabel("Produits disponibles dans le magasin :")
-        available_label.setStyleSheet("font-weight: bold; font-size: 14px; margin-bottom: 5px;")
-        shopping_list_layout.addWidget(available_label)
-        shopping_list_layout.addWidget(self.available_products_list_widget)
+        etiquette_disponible = QLabel("Produits disponibles dans le magasin :")
+        etiquette_disponible.setStyleSheet("font-weight: bold; font-size: 14px; margin-bottom: 5px;")
+        layout_liste_courses.addWidget(etiquette_disponible)
+        layout_liste_courses.addWidget(self.liste_widget_produits_disponibles)
 
-        self.add_to_list_btn = QPushButton("Ajouter à la liste de courses")
-        shopping_list_layout.addWidget(self.add_to_list_btn)
+        self.bouton_ajouter_liste = QPushButton("Ajouter à la liste de courses")
+        layout_liste_courses.addWidget(self.bouton_ajouter_liste)
 
-        shopping_list_label = QLabel("Ma liste de courses :")
-        shopping_list_label.setStyleSheet("font-weight: bold; font-size: 14px; margin-top: 10px; margin-bottom: 5px;")
-        shopping_list_layout.addWidget(shopping_list_label)
+        etiquette_liste_courses = QLabel("Ma liste de courses :")
+        etiquette_liste_courses.setStyleSheet("font-weight: bold; font-size: 14px; margin-top: 10px; margin-bottom: 5px;")
+        layout_liste_courses.addWidget(etiquette_liste_courses)
 
-        self.shopping_list_widget = QListWidget()
-        self.shopping_list_widget.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
-        shopping_list_layout.addWidget(self.shopping_list_widget)
+        self.liste_widget_courses = QListWidget()
+        self.liste_widget_courses.setSelectionMode(QListWidget.SelectionMode.ExtendedSelection)
+        layout_liste_courses.addWidget(self.liste_widget_courses)
 
-        shopping_list_buttons_layout = QHBoxLayout()
-        self.remove_from_list_btn = QPushButton("Retirer")
-        shopping_list_buttons_layout.addWidget(self.remove_from_list_btn)
+        layout_boutons_liste_courses = QHBoxLayout()
+        self.bouton_retirer_liste = QPushButton("Retirer")
+        layout_boutons_liste_courses.addWidget(self.bouton_retirer_liste)
 
-        self.clear_list_btn = QPushButton("Tout effacer")
-        shopping_list_buttons_layout.addWidget(self.clear_list_btn)
+        self.bouton_effacer_liste = QPushButton("Tout effacer")
+        layout_boutons_liste_courses.addWidget(self.bouton_effacer_liste)
 
-        self.save_list_btn = QPushButton("Enregistrer la liste")
-        shopping_list_buttons_layout.addWidget(self.save_list_btn)
+        self.bouton_enregistrer_liste = QPushButton("Enregistrer la liste")
+        layout_boutons_liste_courses.addWidget(self.bouton_enregistrer_liste)
         
-        shopping_list_layout.addLayout(shopping_list_buttons_layout)
+        layout_liste_courses.addLayout(layout_boutons_liste_courses)
 
-        self.available_products_dock.setWidget(shopping_list_container)
+        self.dock_produits_disponibles.setWidget(conteneur_liste_courses)
 
-        # --- Status Bar ---
-        self.status_bar = QStatusBar()
-        self.setStatusBar(self.status_bar)
-        self.status_bar.showMessage("Veuillez ouvrir un plan de magasin...", 2000)
+        # --- Barre d'état ---
+        self.barre_etat = QStatusBar()
+        self.setStatusBar(self.barre_etat)
+        self.barre_etat.showMessage("Veuillez ouvrir un plan de magasin...", 2000)
 
-        # --- Menu Bar ---
-        menu_bar = self.menuBar()
+        # --- Barre de menu ---
+        barre_menu = self.menuBar()
 
-        menu_fichier = menu_bar.addMenu('&Fichier')
-        menu_affichage = menu_bar.addMenu('&Affichage')
+        menu_fichier = barre_menu.addMenu('&Fichier')
+        menu_affichage = barre_menu.addMenu('&Affichage')
 
-        self.open_plan_action = menu_fichier.addAction('Ouvrir un plan de magasin')
+        self.action_ouvrir_plan = menu_fichier.addAction('Ouvrir un plan de magasin')
         menu_fichier.addSeparator()
-        self.quit_action = menu_fichier.addAction('Quitter')
+        self.action_quitter = menu_fichier.addAction('Quitter')
 
-        self.action_toggle_dock = menu_affichage.addAction('Afficher/Masquer le panneau des produits')
-        self.action_toggle_dock.setCheckable(True)
-        self.action_toggle_dock.setChecked(True) # Dock is visible by default
+        self.action_basculer_dock = menu_affichage.addAction('Afficher/Masquer le panneau des produits')
+        self.action_basculer_dock.setCheckable(True)
+        self.action_basculer_dock.setChecked(True) # Le dock est visible par défaut
 
-    def _apply_styles(self):
-        """Applies consistent styling to various widgets."""
+    def appliquerStyles(self):
+        """Applique un style cohérent aux différents widgets."""
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #f8f8f8;
@@ -257,85 +257,85 @@ class FenetreAppliView(QMainWindow):
             }
         """)
 
-    # --- Methods to update UI based on Model data ---
-    def update_store_info(self, store_info: dict):
-        """Updates the QLabels in the top bar with loaded store data."""
-        self.store_name_label.setText(f"Magasin : {store_info.get('nom_magasin', 'Aucun plan chargé')}")
-        self.gerant_name_label.setText(f"Gérant : {store_info.get('auteur', 'N/A')}")
-        self.store_address_label.setText(f"Adresse : {store_info.get('adresse_magasin', 'N/A')}")
+    # --- Méthodes pour mettre à jour l'interface utilisateur en fonction des données du modèle ---
+    def mettreAJourInfosMagasin(self, infos_magasin: dict):
+        """Met à jour les QLabels dans la barre supérieure avec les données du magasin chargées."""
+        self.etiquette_nom_magasin.setText(f"Magasin : {infos_magasin.get('nom_magasin', 'Aucun plan chargé')}")
+        self.etiquette_nom_gerant.setText(f"Gérant : {infos_magasin.get('auteur', 'N/A')}")
+        self.etiquette_adresse_magasin.setText(f"Adresse : {infos_magasin.get('adresse_magasin', 'N/A')}")
 
-    def display_map(self, pixmap: QPixmap):
-        """Displays the given pixmap on the image viewer."""
-        self.image_viewer.set_map_pixmap(pixmap)
+    def afficherCarte(self, pixmap: QPixmap):
+        """Affiche le pixmap donné sur la visionneuse d'images."""
+        self.visionneuse_image.definirPixmapCarte(pixmap)
 
-    def display_available_products(self, products_by_category: dict):
-        """Populates the available products list widget."""
-        self.available_products_list_widget.clear()
-        if not products_by_category:
+    def afficherProduitsDisponibles(self, produits_par_categorie: dict):
+        """Remplit le widget de liste des produits disponibles."""
+        self.liste_widget_produits_disponibles.clear()
+        if not produits_par_categorie:
             item = QListWidgetItem("Aucun produit disponible dans ce magasin.")
-            item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled) # Make it non-selectable
-            self.available_products_list_widget.addItem(item)
+            item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled) # Le rendre non sélectionnable
+            self.liste_widget_produits_disponibles.addItem(item)
             return
 
-        for category, products in products_by_category.items():
-            category_item = QListWidgetItem(f"--- {category} ---")
-            category_item.setFlags(category_item.flags() & ~Qt.ItemFlag.ItemIsSelectable) # Make category non-selectable
-            category_item.setForeground(QColor("blue"))
-            self.available_products_list_widget.addItem(category_item)
+        for categorie, produits in produits_par_categorie.items():
+            item_categorie = QListWidgetItem(f"--- {categorie} ---")
+            item_categorie.setFlags(item_categorie.flags() & ~Qt.ItemFlag.ItemIsSelectable) # Rendre la catégorie non sélectionnable
+            item_categorie.setForeground(QColor("blue"))
+            self.liste_widget_produits_disponibles.addItem(item_categorie)
 
-            for product in products:
-                item = QListWidgetItem(product)
-                self.available_products_list_widget.addItem(item)
+            for produit in produits:
+                item = QListWidgetItem(produit)
+                self.liste_widget_produits_disponibles.addItem(item)
 
-    def display_product_positions_on_map(self, product_positions: dict):
-        """Displays product labels on the map based on their positions."""
-        self.image_viewer.clear_all_product_labels()
-        for product_name, pos_data in product_positions.items():
-            x = pos_data.get('x')
-            y = pos_data.get('y')
+    def afficherPositionsProduitsSurCarte(self, positions_produits: dict):
+        """Affiche les étiquettes de produits sur la carte en fonction de leurs positions."""
+        self.visionneuse_image.effacerToutesEtiquettesProduit()
+        for nom_produit, donnees_pos in positions_produits.items():
+            x = donnees_pos.get('x')
+            y = donnees_pos.get('y')
             if x is not None and y is not None:
-                self.image_viewer.place_product_label(product_name, x, y)
+                self.visionneuse_image.placerEtiquetteProduit(nom_produit, x, y)
 
-    def update_shopping_list_display(self, shopping_list: list[str]):
-        """Updates the shopping list widget with the current list."""
-        self.shopping_list_widget.clear()
-        for product in shopping_list:
-            self.shopping_list_widget.addItem(QListWidgetItem(product))
+    def mettreAJourAffichageListeCourses(self, liste_courses: list[str]):
+        """Met à jour le widget de la liste de courses avec la liste actuelle."""
+        self.liste_widget_courses.clear()
+        for produit in liste_courses:
+            self.liste_widget_courses.addItem(QListWidgetItem(produit))
 
-    def show_status_message(self, message: str, timeout: int = 2000):
-        """Displays a message in the status bar."""
-        self.status_bar.showMessage(message, timeout)
+    def afficherMessageStatut(self, message: str, delai: int = 2000):
+        """Affiche un message dans la barre d'état."""
+        self.barre_etat.showMessage(message, delai)
 
-    def show_info_message(self, title: str, message: str):
-        """Displays an information message box."""
-        QMessageBox.information(self, title, message)
+    def afficherMessageInfo(self, titre: str, message: str):
+        """Affiche une boîte de message d'information."""
+        QMessageBox.information(self, titre, message)
 
-    def show_warning_message(self, title: str, message: str):
-        """Displays a warning message box."""
-        QMessageBox.warning(self, title, message)
+    def afficherMessageAvertissement(self, titre: str, message: str):
+        """Affiche une boîte de message d'avertissement."""
+        QMessageBox.warning(self, titre, message)
 
-    def show_critical_message(self, title: str, message: str):
-        """Displays a critical error message box."""
-        QMessageBox.critical(self, title, message)
+    def afficherMessageCritique(self, titre: str, message: str):
+        """Affiche une boîte de message d'erreur critique."""
+        QMessageBox.critical(self, titre, message)
 
-    def ask_yes_no_question(self, title: str, message: str) -> bool:
-        """Asks a yes/no question and returns True if Yes is selected."""
-        reply = QMessageBox.question(self, title, message,
-                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                                     QMessageBox.StandardButton.No)
-        return reply == QMessageBox.StandardButton.Yes
+    def poserQuestionOuiNon(self, titre: str, message: str) -> bool:
+        """Pose une question oui/non et renvoie True si Oui est sélectionné."""
+        reponse = QMessageBox.question(self, titre, message,
+                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                       QMessageBox.StandardButton.No)
+        return reponse == QMessageBox.StandardButton.Yes
 
-    def get_open_file_name(self, caption: str, filter: str) -> str:
-        """Opens a file dialog for opening a file and returns the selected file path."""
-        file_path, _ = QFileDialog.getOpenFileName(self, caption, "", filter)
-        return file_path
+    def obtenirNomFichierOuvrir(self, legende: str, filtre: str) -> str:
+        """Ouvre une boîte de dialogue de fichier pour ouvrir un fichier et renvoie le chemin du fichier sélectionné."""
+        chemin_fichier, _ = QFileDialog.getOpenFileName(self, legende, "", filtre)
+        return chemin_fichier
 
-    def get_save_file_name(self, caption: str, default_name: str, filter: str) -> str:
-        """Opens a file dialog for saving a file and returns the selected file path."""
-        file_path, _ = QFileDialog.getSaveFileName(self, caption, default_name, filter)
-        return file_path
+    def obtenirNomFichierEnregistrer(self, legende: str, nom_par_defaut: str, filtre: str) -> str:
+        """Ouvre une boîte de dialogue de fichier pour enregistrer un fichier et renvoie le chemin du fichier sélectionné."""
+        chemin_fichier, _ = QFileDialog.getSaveFileName(self, legende, nom_par_defaut, filtre)
+        return chemin_fichier
 
-    def toggle_product_list_dock_visibility(self, visible: bool):
-        """Controls the visibility of the product list dock."""
-        self.available_products_dock.setVisible(visible)
-        self.action_toggle_dock.setChecked(visible)
+    def basculerVisibiliteDockListeProduits(self, visible: bool):
+        """Contrôle la visibilité du dock de la liste de produits."""
+        self.dock_produits_disponibles.setVisible(visible)
+        self.action_basculer_dock.setChecked(visible)
