@@ -1,16 +1,16 @@
 # main.py
 import sys
 from PyQt6.QtWidgets import QApplication
-from MVC_MODEL import StoreModel
-from MVC_VIEW import FenetreAppliView
-from MVC_CONTROLLER import StoreController
+from MVC_MODEL import ModeleMagasin
+from MVC_VIEW import FenetreAppliVue
+from MVC_CONTROLLER import ControleurMagasin
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    model = StoreModel()
-    view = FenetreAppliView()
-    controller = StoreController(model, view)
+    modele = ModeleMagasin()
+    vue = FenetreAppliVue()
+    controleur = ControleurMagasin(modele, vue)
 
-    view.show()
+    vue.show()
     sys.exit(app.exec())
