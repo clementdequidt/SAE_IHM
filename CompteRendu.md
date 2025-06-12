@@ -80,7 +80,21 @@ Membres Présents :
 - Développement des classes Case, Plan et Magasin finies -> Bastien COUSIN
 - Documentation des classes et des tests unitaires -> Bastien COUSIN
 - Développement IHM Gérant (quasiment fini, manque une grosse fonctionnalité) -> D'abord Pierre DELDALLE (matin) puis Clément DEQUIDT et Sébastien GROUÉ (après-midi)
-- Documentation de l'IHM Gérant -> Sébastien GROUÉ (après-midi)
+- Début de la documentation de l'IHM Gérant -> Sébastien GROUÉ (après-midi)
 - Début écriture de la notice d'utilisateur -> Pierre DELDALLE (après-midi)
-- Développement IHM client (Fichier a pars afin de faire des test) Sébastien GROUÉ (matin)
+- Développement IHM client (Fichier a pars afin de faire des test) -> Sébastien GROUÉ (matin)
   
+*Jeudi 12/06, J3 SAE 8h30/17h :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+- Fin de l'écriture de la notice d'utilisateur -> Pierre DELDALLE (matin)
+- Dernières modifications des classes Case, Plan et Magasin car bugs ou fonctionnalités manquantes + documentation -> Bastien COUSIN (matin)
+- Fin du développement de l'IHM Gérant -> Clément DEQUIDT (matin)
+- Poursuite de développement de l'IHM Client -> Clément DEQUIDT et Bastien COUSIN(après-midi)
+- Documentation IHM Gérant -> Pierre DELDALLE et Sébastien GROUÉ (après-midi)
