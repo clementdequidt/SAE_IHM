@@ -13,15 +13,15 @@ from PyQt6.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QIcon, QDrag, QMou
 from PyQt6.QtCore import Qt, QDate, QPointF, QRectF, pyqtSignal, QMimeData, QCoreApplication
 
 #Fonction pour détecter le système d'exploitation du client
-def detecter_theme_systeme():
+def detecterThemeSysteme():
     if platform.system() == "Windows":
         try:
             import winreg #importation de winreg pour lire, écrire et modifier le registre de Windows
             registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
-            key_path = r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
-            key = winreg.OpenKey(registry, key_path)
-            apps_use_light_theme, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
-            return "clair" if apps_use_light_theme == 1 else "sombre"
+            keyPath = r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
+            key = winreg.OpenKey(registry, keyPath)
+            appsUseLightTheme, _ = winreg.QueryValueEx(key, 'AppsUseLightTheme')
+            return "clair" if appsUseLightTheme == 1 else "sombre"
         except Exception:
             return "clair"
     return "clair"
@@ -29,38 +29,38 @@ def detecter_theme_systeme():
 
 #Page de questionnaire pour crée son magasin
 class PageQuestionnaire(QWidget):
-    questionnaire_valide = pyqtSignal(dict)
+    questionnaireValide = pyqtSignal(dict)
     
-    def __init__(self, switch_callback):
+    def __init__(self, switchCallback):
         super().__init__()
-        self.switch_callback = switch_callback
+        self.switchCallback = switchCallback
 
-        form_layout = QVBoxLayout() #layout vertical pour structurer le questionnaire
-        form_layout.setContentsMargins(40, 40, 40, 40)
-        form_layout.setSpacing(15) #Espacement de 15 entre chaque layout
+        formLayout = QVBoxLayout() #layout vertical pour structurer le questionnaire
+        formLayout.setContentsMargins(40, 40, 40, 40)
+        formLayout.setSpacing(15) #Espacement de 15 entre chaque layout
 
         title = QLabel("Création d'un nouveau magasin") #Label pour préciser ce que l'on fais
         title.setStyleSheet("font-size: 24px; font-weight: bold;") #Police utilisé, caractère, taille et mise en gras
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        form_layout.addWidget(title)
+        formLayout.addWidget(title)
 
-        self.projet_input = self.ajouter_label_input("Nom du projet :", "Saisissez le nom du projet", form_layout) #Ajout d'un label pour saisir le nom du projet
-        self.auteur_input = self.ajouter_label_input("Votre nom  :", "Saisissez votre nom", form_layout) #Ajout d'un label pour saisir notre nom 
-        self.date_input = self.ajouter_date_input("Date de création :", form_layout) #Ajout d'un label pour saisir la date de création
+        self.projetInput = self.ajouterLabelInput("Nom du projet :", "Saisissez le nom du projet", formLayout) #Ajout d'un label pour saisir le nom du projet
+        self.auteurInput = self.ajouterLabelInput("Votre nom  :", "Saisissez votre nom", formLayout) #Ajout d'un label pour saisir notre nom 
+        self.dateInput = self.ajouterDateInput("Date de création :", formLayout) #Ajout d'un label pour saisir la date de création
 
-        self.nom_magasin_input = self.ajouter_label_input("Nom du magasin :", "Nom du magasin", form_layout)  #Ajout d'un label pour saisir le nom du magasin
-        self.adresse_magasin_input = self.ajouter_label_input("Adresse du magasin :", "Adresse complète", form_layout) #Ajout d'un label pour saisir l'adresse du magasin
+        self.nomMagasinInput = self.ajouterLabelInput("Nom du magasin :", "Nom du magasin", formLayout)  #Ajout d'un label pour saisir le nom du magasin
+        self.adresseMagasinInput = self.ajouterLabelInput("Adresse du magasin :", "Adresse complète", formLayout) #Ajout d'un label pour saisir l'adresse du magasin
 
-        btn_valider = QPushButton("Valider") #Un bouton pour valider
-        btn_valider.clicked.connect(self.verifier_et_passer)#Appel d'une fonction, si tout les champs
+        btnValider = QPushButton("Valider") #Un bouton pour valider
+        btnValider.clicked.connect(self.verifierEtPasser)#Appel d'une fonction, si tout les champs
         #sont complé alors on peut passer sinon on ne peut pas valider
-        form_layout.addWidget(btn_valider)
+        formLayout.addWidget(btnValider)
 
-        outer_layout = QVBoxLayout() #Ajout d'un layout vertical
-        outer_layout.addStretch()
-        outer_layout.addLayout(form_layout)
-        outer_layout.addStretch()
-        self.setLayout(outer_layout)
+        outerLayout = QVBoxLayout() #Ajout d'un layout vertical
+        outerLayout.addStretch()
+        outerLayout.addLayout(formLayout)
+        outerLayout.addStretch()
+        self.setLayout(outerLayout)
 
         #On définit la taille de police des label, des lineEdit,DateEdit et des Bouttons
         self.setStyleSheet("""
@@ -87,60 +87,60 @@ class PageQuestionnaire(QWidget):
             }
         """)
 
-    def ajouter_label_input(self, label_text, placeholder, layout):
-        layout.addWidget(QLabel(label_text))
+    def ajouterLabelInput(self, labelText, placeholder, layout):
+        layout.addWidget(QLabel(labelText))
         line = QLineEdit()
         line.setPlaceholderText(placeholder)
         layout.addWidget(line)
         return line
 
-    def ajouter_date_input(self, label_text, layout):
-        layout.addWidget(QLabel(label_text))
-        date_edit = QDateEdit()
-        date_edit.setCalendarPopup(True)
-        date_edit.setDate(QDate.currentDate())
-        layout.addWidget(date_edit)
-        return date_edit
+    def ajouterDateInput(self, labelText, layout):
+        layout.addWidget(QLabel(labelText))
+        dateEdit = QDateEdit()
+        dateEdit.setCalendarPopup(True)
+        dateEdit.setDate(QDate.currentDate())
+        layout.addWidget(dateEdit)
+        return dateEdit
 
     #Si tout les champs ne sont pas vérifier et rempli alors on renvoie un warning pour dire que les champs sont nécessaires
-    def verifier_et_passer(self):
+    def verifierEtPasser(self):
         if not all([
-            self.projet_input.text().strip(),
-            self.auteur_input.text().strip(),
-            self.nom_magasin_input.text().strip(),
-            self.adresse_magasin_input.text().strip()
+            self.projetInput.text().strip(),
+            self.auteurInput.text().strip(),
+            self.nomMagasinInput.text().strip(),
+            self.adresseMagasinInput.text().strip()
         ]):
             QMessageBox.warning(self, "Champs requis", "Veuillez remplir tous les champs.")
             return
-        self.questionnaire_valide.emit(self.get_questionnaire_data())
-        self.switch_callback()
+        self.questionnaireValide.emit(self.getQuestionnaireData())
+        self.switchCallback()
 
 
-    def get_questionnaire_data(self):
+    def getQuestionnaireData(self):
         return {
-            "nom_projet": self.projet_input.text().strip(),
-            "auteur": self.auteur_input.text().strip(),
-            "date_creation": self.date_input.date().toString(Qt.DateFormat.ISODate),
-            "nom_magasin": self.nom_magasin_input.text().strip(),
-            "adresse_magasin": self.adresse_magasin_input.text().strip()
+            "nom_projet": self.projetInput.text().strip(),
+            "auteur": self.auteurInput.text().strip(),
+            "date_creation": self.dateInput.date().toString(Qt.DateFormat.ISODate),
+            "nom_magasin": self.nomMagasinInput.text().strip(),
+            "adresse_magasin": self.adresseMagasinInput.text().strip()
         }
 
 #Choisir les produits disponibles dans le magasin
 class ChoisirProduits(QWidget):
-    selection_validee = pyqtSignal(dict)
+    selectionValidee = pyqtSignal(dict)
 
-    def __init__(self, fichier_produits='liste_produits.json'): #Appelle de la liste de produits (la même que celle donner par le prof)
+    def __init__(self, fichierProduits='liste_produits.json'): #Appelle de la liste de produits (la même que celle donner par le prof)
         super().__init__()
         self.setWindowTitle("Choisir les produits disponibles")
         self.setGeometry(100, 100, 600, 500)
 
-        self.fichier_produits = fichier_produits
-        self.produits_par_categorie = {}
+        self.fichierProduits = fichierProduits
+        self.produitsParCategorie = {}
         self.categories = [] #Liste pour les catégories d'aliments
-        self.page_courante = 0
-        self.categories_par_page = 3 # Un nombre de 3 catégorie par page de l'application
-        self.listes_categorie = {} # Contient les QListWidget actuellement affichés
-        self.selections_globales = {}  #Dictionnaire pour stocker toutes les sélections (produit -> est_sélectionné)
+        self.pageCourante = 0
+        self.categoriesParPage = 3 # Un nombre de 3 catégorie par page de l'application
+        self.listesCategorie = {} # Contient les QListWidget actuellement affichés
+        self.selectionsGlobales = {}  #Dictionnaire pour stocker toutes les sélections (produit -> est_sélectionné)
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -155,50 +155,50 @@ class ChoisirProduits(QWidget):
 
         self.container = QWidget()
         self.scroll.setWidget(self.container)
-        self.container_layout = QHBoxLayout()
-        self.container.setLayout(self.container_layout)
+        self.containerLayout = QHBoxLayout()
+        self.container.setLayout(self.containerLayout)
 
-        nav_layout = QHBoxLayout()
-        self.btn_precedent = QPushButton("Page Précédente") #Boutton précédent pour aller dans la page d'avant
-        self.btn_precedent.clicked.connect(self.page_precedente)
-        nav_layout.addWidget(self.btn_precedent)
-        self.btn_suivant = QPushButton("Page Suivante") #Boutton suivant pour aller dans la page d'après
-        self.btn_suivant.clicked.connect(self.page_suivante)
-        nav_layout.addWidget(self.btn_suivant)
-        self.layout.addLayout(nav_layout)
+        navLayout = QHBoxLayout()
+        self.btnPrecedent = QPushButton("Page Précédente") #Boutton précédent pour aller dans la page d'avant
+        self.btnPrecedent.clicked.connect(self.pagePrecedente)
+        navLayout.addWidget(self.btnPrecedent)
+        self.btnSuivant = QPushButton("Page Suivante") #Boutton suivant pour aller dans la page d'après
+        self.btnSuivant.clicked.connect(self.pageSuivante)
+        navLayout.addWidget(self.btnSuivant)
+        self.layout.addLayout(navLayout)
 
-        self.btn_valider = QPushButton("Valider la sélection") #Boutton pour valider la sélection de produits
-        self.btn_valider.clicked.connect(self.valider_selection)
-        self.layout.addWidget(self.btn_valider)
+        self.btnValider = QPushButton("Valider la sélection") #Boutton pour valider la sélection de produits
+        self.btnValider.clicked.connect(self.validerSelection)
+        self.layout.addWidget(self.btnValider)
 
-        self.charger_produits()
+        self.chargerProduits()
         
     #Fonction pour charger les produits
-    def charger_produits(self):
+    def chargerProduits(self):
         try:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            file_path = os.path.join(current_dir, self.fichier_produits)
+            currentDir = os.path.dirname(os.path.abspath(__file__))
+            filePath = os.path.join(currentDir, self.fichierProduits)
 
-            with open(file_path, 'r', encoding='utf-8') as f: #On ouvre en mode lecture le fichier
-                self.produits_par_categorie = json.load(f) #On charge forcément un .json
+            with open(filePath, 'r', encoding='utf-8') as f: #On ouvre en mode lecture le fichier
+                self.produitsParCategorie = json.load(f) #On charge forcément un .json
         except FileNotFoundError:
-            QMessageBox.critical(self, "Erreur", f"Le fichier '{self.fichier_produits}' n'a pas été trouvé. Veuillez vous assurer qu'il est dans le même répertoire que l'application.")
-            self.produits_par_categorie = {}
+            QMessageBox.critical(self, "Erreur", f"Le fichier '{self.fichierProduits}' n'a pas été trouvé. Veuillez vous assurer qu'il est dans le même répertoire que l'application.")
+            self.produitsParCategorie = {}
         except json.JSONDecodeError:
-            QMessageBox.critical(self, "Erreur", f"Erreur de lecture du fichier '{self.fichier_produits}'. Assurez-vous qu'il s'agit d'un fichier JSON valide.")
-            self.produits_par_categorie = {}
+            QMessageBox.critical(self, "Erreur", f"Erreur de lecture du fichier '{self.fichierProduits}'. Assurez-vous qu'il s'agit d'un fichier JSON valide.")
+            self.produitsParCategorie = {}
         except Exception as e: #Si on ne trouve ou on n'a pas le fichier alors on renvoie une erreur
             QMessageBox.critical(self, "Erreur", f"Impossible de charger la liste des produits:\n{e}")
-            self.produits_par_categorie = {}
+            self.produitsParCategorie = {}
             
-        #Initialiser selections_globales avec tous les produits non sélectionnés au départ
-        for categorie, produits in self.produits_par_categorie.items():
+        #Initialiser selectionsGlobales avec tous les produits non sélectionnés au départ
+        for categorie, produits in self.produitsParCategorie.items():
             for produit in produits:
-                self.selections_globales[produit] = False
+                self.selectionsGlobales[produit] = False
 
-        self.categories = list(self.produits_par_categorie.keys())
-        self.page_courante = 0
-        self.afficher_page()
+        self.categories = list(self.produitsParCategorie.keys())
+        self.pageCourante = 0
+        self.afficherPage()
 
         #On définit la taille de police des label, des listWidget et des Bouttons
         self.setStyleSheet("""
@@ -234,119 +234,119 @@ class ChoisirProduits(QWidget):
         """)
 
     #Fonction qui sauvegarde les produits sélectionner actuellement
-    def _sauvegarder_selections_courantes(self):
-        """Sauvegarde l'état des QListWidget actuellement affichés dans selections_globales."""
-        for categorie, liste_widget in self.listes_categorie.items():
-            for i in range(liste_widget.count()):
-                item = liste_widget.item(i)
+    def sauvegarderSelectionsCourantes(self):
+        """Sauvegarde l'état des QListWidget actuellement affichés dans selectionsGlobales."""
+        for categorie, listeWidget in self.listesCategorie.items():
+            for i in range(listeWidget.count()):
+                item = listeWidget.item(i)
                 if item.flags() & Qt.ItemFlag.ItemIsSelectable:
-                    self.selections_globales[item.text()] = item.isSelected()
+                    self.selectionsGlobales[item.text()] = item.isSelected()
 
-    def afficher_page(self):
+    def afficherPage(self):
         #Sauvegarder les sélections AVANT de vider les listes
-        self._sauvegarder_selections_courantes()
+        self.sauvegarderSelectionsCourantes()
 
         # Nettoyage des widgets précédents
-        for i in reversed(range(self.container_layout.count())):
-            layout_or_widget = self.container_layout.itemAt(i)
-            if layout_or_widget is not None:
-                widget = layout_or_widget.widget()
+        for i in reversed(range(self.containerLayout.count())):
+            layoutOrWidget = self.containerLayout.itemAt(i)
+            if layoutOrWidget is not None:
+                widget = layoutOrWidget.widget()
                 if widget is not None:
                     widget.setParent(None)
                 else:
-                    child_layout = layout_or_widget.layout()
-                    if child_layout is not None:
-                        self._clear_layout(child_layout)
-                        self.container_layout.removeItem(child_layout)
+                    childLayout = layoutOrWidget.layout()
+                    if childLayout is not None:
+                        self.clearLayout(childLayout)
+                        self.containerLayout.removeItem(childLayout)
                     else:
-                        self.container_layout.removeItem(layout_or_widget)
+                        self.containerLayout.removeItem(layoutOrWidget)
 
-        self.listes_categorie = {}  # Réinitialise pour les nouvelles listes
+        self.listesCategorie = {}  # Réinitialise pour les nouvelles listes
 
-        start = self.page_courante * self.categories_par_page
-        end = start + self.categories_par_page
-        categories_a_afficher = self.categories[start:end]
+        start = self.pageCourante * self.categoriesParPage
+        end = start + self.categoriesParPage
+        categoriesaAfficher = self.categories[start:end]
 
-        for categorie in categories_a_afficher:
-            produits = self.produits_par_categorie[categorie]
-            layout_categorie = QVBoxLayout()
+        for categorie in categoriesaAfficher:
+            produits = self.produitsParCategorie[categorie]
+            layoutCategorie = QVBoxLayout()
 
             label = QLabel(categorie)
             label.setObjectName("categorieLabel")
-            layout_categorie.addWidget(label)
+            layoutCategorie.addWidget(label)
 
-            liste_widget = QListWidget()
-            liste_widget.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
+            listeWidget = QListWidget()
+            listeWidget.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
             for produit in produits:
                 item = QListWidgetItem(produit)
                 #Restaurer la sélection de l'item si elle était sauvegardée
-                if self.selections_globales.get(produit, False): # Par défaut à False si pas trouvé
+                if self.selectionsGlobales.get(produit, False): # Par défaut à False si pas trouvé
                     item.setSelected(True)
-                liste_widget.addItem(item)
-            layout_categorie.addWidget(liste_widget)
+                listeWidget.addItem(item)
+            layoutCategorie.addWidget(listeWidget)
 
-            self.container_layout.addLayout(layout_categorie)
-            self.listes_categorie[categorie] = liste_widget
+            self.containerLayout.addLayout(layoutCategorie)
+            self.listesCategorie[categorie] = listeWidget
 
-        self.btn_precedent.setEnabled(self.page_courante > 0)
-        self.btn_suivant.setEnabled(end < len(self.categories))
+        self.btnPrecedent.setEnabled(self.pageCourante > 0)
+        self.btnSuivant.setEnabled(end < len(self.categories))
 
-    def _clear_layout(self, layout):
+    def clearLayout(self, layout):
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
             else:
-                child_layout = item.layout()
-                if child_layout is not None:
-                    self._clear_layout(child_layout)
+                childLayout = item.layout()
+                if childLayout is not None:
+                    self.clearLayout(childLayout)
 
-    def page_precedente(self):
+    def pagePrecedente(self):
         #Sauvegarder les sélections avant de retourner dans la page précédente 
-        self._sauvegarder_selections_courantes()
-        if self.page_courante > 0:
-            self.page_courante -= 1
-            self.afficher_page()
+        self.sauvegarderSelectionsCourantes()
+        if self.pageCourante > 0:
+            self.pageCourante -= 1
+            self.afficherPage()
 
-    def page_suivante(self):
+    def pageSuivante(self):
         #Sauvegarder les sélections avant d'aller dans la prochaine page
-        self._sauvegarder_selections_courantes()
-        if (self.page_courante + 1) * self.categories_par_page < len(self.categories):
-            self.page_courante += 1
-            self.afficher_page()
+        self.sauvegarderSelectionsCourantes()
+        if (self.pageCourante + 1) * self.categoriesParPage < len(self.categories):
+            self.pageCourante += 1
+            self.afficherPage()
 
-    def valider_selection(self):
+    def validerSelection(self):
         #S'assurer que les sélections de la page actuelle sont sauvegardées avant validation
-        self._sauvegarder_selections_courantes()
+        self.sauvegarderSelectionsCourantes()
 
-        selection_finale = {}
-        total_selectionnes = 0
-        # Parcourir les sélections_globales pour construire la selection_finale
-        for produit, selected in self.selections_globales.items():
+        selectionFinale = {}
+        totalSelectionnes = 0
+        # Parcourir les sélectionsGlobales pour construire la selectionFinale
+        for produit, selected in self.selectionsGlobales.items():
             if selected:
                 # Retrouver la catégorie du produit pour le classer
-                for categorie, produits_liste in self.produits_par_categorie.items():
-                    if produit in produits_liste:
-                        if categorie not in selection_finale:
-                            selection_finale[categorie] = []
-                        selection_finale[categorie].append(produit)
-                        total_selectionnes += 1
+                for categorie, produitsListe in self.produitsParCategorie.items():
+                    if produit in produitsListe:
+                        if categorie not in selectionFinale:
+                            selectionFinale[categorie] = []
+                        selectionFinale[categorie].append(produit)
+                        totalSelectionnes += 1
                         break # Produit trouvé, passer au suivant
         
         #Si le nombre de produit est inférieur a 20 alors message d'erreur pour nous dire qu'il faut un minima de 20 produits
-        if total_selectionnes < 20:
+        if totalSelectionnes < 20:
             QMessageBox.warning(
                 self,
                 "Sélection insuffisante",
-                f"Veuillez choisir au moins 20 produits (actuellement : {total_selectionnes})."
+                f"Veuillez choisir au moins 20 produits (actuellement : {totalSelectionnes})."
             )
             return
 
-        self.selection_validee.emit(selection_finale)
+        self.selectionValidee.emit(selectionFinale)
 
 class Image(QGraphicsView):
-    produit_place_signal = pyqtSignal(str, QPointF)
+    produitPlaceSignal = pyqtSignal(str, QPointF)
 
     #Taille d'une case
     CELL_SIZE = 51
@@ -354,20 +354,20 @@ class Image(QGraphicsView):
     def __init__(self, chemin: str):
         super().__init__()
 
-        self._zoom = 0 # Le zoom
-        self._empty = True
-        self._scene = QGraphicsScene(self)
-        self.setScene(self._scene)
+        self.zoom = 0 # Le zoom
+        self.empty = True
+        self.scene = QGraphicsScene(self)
+        self.setScene(self.scene)
 
         #Pour afficher l'image
-        self._pixmap_item = QGraphicsPixmapItem()
-        self._scene.addItem(self._pixmap_item)
+        self.pixmapItem = QGraphicsPixmapItem()
+        self.scene.addItem(self.pixmapItem)
         
         #stocker les cellules de la case
-        self._grid_cells = []
-        self._product_text_items = {}
-        self._product_positions_history = [] 
-        self._history_index = -1 
+        self.gridCells = []
+        self.productTextItems = {}
+        self.productPositionsHistory = [] 
+        self.historyIndex = -1 
 
         #Configure le point de zoom 
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
@@ -390,129 +390,129 @@ class Image(QGraphicsView):
         if pixmap.isNull():
             label = QLabel(f"Image non trouvée : {chemin}") #Si le chemin de l'image n'est pas trouvé
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self._scene.addWidget(label)
+            self.scene.addWidget(label)
         else:
             self.setPixmap(pixmap) #Sinon on affiche l'image
 
     def setPixmap(self, pixmap: QPixmap):
         #Met le zoom a zero
-        self._zoom = 0
-        self._pixmap_item.setPixmap(pixmap)
+        self.zoom = 0
+        self.pixmapItem.setPixmap(pixmap)
         
         #Définit la taille de la scène à celle de l’image
-        self._scene.setSceneRect(QRectF(pixmap.rect()))
+        self.scene.setSceneRect(QRectF(pixmap.rect()))
         
         #Pour mettre l'image dans la fenêtre
-        self.fitInView(self._scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
-        self._empty = False
-        self._draw_grid_overlay()
+        self.fitInView(self.scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
+        self.empty = False
+        self.drawGridOverlay()
         
         #Remettre a vide l'historique
-        self._product_positions_history = []
-        self._history_index = -1
+        self.ProductPositionsHistory = []
+        self.historyIndex = -1
 
-    def _draw_grid_overlay(self):
+    def drawGridOverlay(self):
         
         # Supprime les cellules de la grille
-        for cell in self._grid_cells:
-            self._scene.removeItem(cell)
-        self._grid_cells.clear()
+        for cell in self.gridCells:
+            self.scene.removeItem(cell)
+        self.gridCells.clear()
 
         #Pour reprendre la taille de l'image
-        image_width = self._pixmap_item.pixmap().width()
-        image_height = self._pixmap_item.pixmap().height()
+        imageWidth = self.pixmapItem.pixmap().width()
+        imageHeight = self.pixmapItem.pixmap().height()
 
-        grid_color_border = QColor(255, 0, 0, 100)
-        grid_pen = QPen(grid_color_border)
-        grid_pen.setWidth(2)
+        gridColorBorder = QColor(255, 0, 0, 100)
+        gridPen = QPen(gridColorBorder)
+        gridPen.setWidth(2)
 
         # Crée une grille rectangulaire par-dessus l’image
-        for y in range(0, image_height, self.CELL_SIZE):
-            for x in range(0, image_width, self.CELL_SIZE):
-                rect_item = QGraphicsRectItem(x, y, self.CELL_SIZE, self.CELL_SIZE)
-                rect_item.setPen(grid_pen)
-                self._scene.addItem(rect_item)
-                self._grid_cells.append(rect_item)
-                rect_item.setZValue(1) #Pour mettre la grille par dessus notre image
+        for y in range(0, imageHeight, self.CELL_SIZE):
+            for x in range(0, imageWidth, self.CELL_SIZE):
+                rectItem = QGraphicsRectItem(x, y, self.CELL_SIZE, self.CELL_SIZE)
+                rectItem.setPen(gridPen)
+                self.scene.addItem(rectItem)
+                self.gridCells.append(rectItem)
+                rectItem.setZValue(1) #Pour mettre la grille par dessus notre image
 
-        self._pixmap_item.setZValue(0)
+        self.pixmapItem.setZValue(0)
 
-    def placer_produit(self, product_name: str, x: float, y: float, record_history=True):
-        if product_name in self._product_text_items:
-            self._scene.removeItem(self._product_text_items[product_name])
-            del self._product_text_items[product_name]
+    def placerProduit(self, productName: str, x: float, y: float, recordHistory=True):
+        if productName in self.productTextItems:
+            self.scene.removeItem(self.productTextItems[productName])
+            del self.productTextItems[productName]
 
-        text_item = QGraphicsTextItem(product_name)
-        text_item.setDefaultTextColor(QColor("red"))
-        text_item.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+        textItem = QGraphicsTextItem(productName)
+        textItem.setDefaultTextColor(QColor("red"))
+        textItem.setFont(QFont("Arial", 12, QFont.Weight.Bold))
 
-        text_item.setPos(x - text_item.boundingRect().width() / 2,
-                         y - text_item.boundingRect().height() / 2)
+        textItem.setPos(x - textItem.boundingRect().width() / 2,
+                         y - textItem.boundingRect().height() / 2)
 
-        text_item.setZValue(2)
-        self._scene.addItem(text_item)
-        self._product_text_items[product_name] = text_item
+        textItem.setZValue(2)
+        self.scene.addItem(textItem)
+        self.productTextItems[productName] = textItem
 
-        if record_history:
-            del self._product_positions_history[self._history_index + 1:]
-            self._product_positions_history.append((product_name, QPointF(x, y)))
-            self._history_index += 1
+        if recordHistory:
+            del self.productPositionsHistory[self.historyIndex + 1:]
+            self.productPositionsHistory.append((productName, QPointF(x, y)))
+            self.historyIndex += 1
 
-    def retirer_produit(self, product_name: str):
-        if product_name in self._product_text_items:
-            self._scene.removeItem(self._product_text_items[product_name])
-            del self._product_text_items[product_name]
+    def retirerProduit(self, productName: str):
+        if productName in self.productTextItems:
+            self.scene.removeItem(self.productTextItems[productName])
+            del self.productTextItems[productName]
 
-    def enlever_derniere_action(self):
-        if self._history_index >= 0:
-            last_action = self._product_positions_history[self._history_index]
-            product_name_to_remove = last_action[0]
-            self.retirer_produit(product_name_to_remove)
-            self._history_index -= 1
+    def enleverDerniereAction(self):
+        if self.historyIndex >= 0:
+            lastAction = self.productPositionsHistory[self.historyIndex]
+            productNameToRemove = lastAction[0]
+            self.retirerProduit(productNameToRemove)
+            self.historyIndex -= 1
             self.produits()
             return True
         return False
 
-    def rajouter_derniere_action(self):
-        if self._history_index + 1 < len(self._product_positions_history):
-            self._history_index += 1
-            action_to_redo = self._product_positions_history[self._history_index]
-            self.placer_produit(action_to_redo[0], action_to_redo[1].x(), action_to_redo[1].y(), record_history=False)
+    def rajouterDerniereAction(self):
+        if self.historyIndex + 1 < len(self.productPositionsHistory):
+            self.historyIndex += 1
+            actionToRedo = self.productPositionsHistory[self.historyIndex]
+            self.placerProduit(actionToRedo[0], actionToRedo[1].x(), actionToRedo[1].y(), recordHistory=False)
             return True
         return False
 
     def produits(self):
-        for product_item in list(self._product_text_items.values()):
-            self._scene.removeItem(product_item)
-        self._product_text_items.clear()
+        for productItem in list(self.productTextItems.values()):
+            self.scene.removeItem(productItem)
+        self.productTextItems.clear()
 
-        for i in range(self._history_index + 1):
-            product_name, position = self._product_positions_history[i]
-            self.placer_produit(product_name, position.x(), position.y(), record_history=False)
+        for i in range(self.historyIndex + 1):
+            productName, position = self.productPositionsHistory[i]
+            self.placerProduit(productName, position.x(), position.y(), recordHistory=False)
 
 
     def wheelEvent(self, event: QWheelEvent):
-        if self._empty:
+        if self.empty:
             return
 
-        zoom_in_factor = 1.25
-        zoom_out_factor = 1 / zoom_in_factor
+        zoomInFactor = 1.25
+        zoomOutFactor = 1 / zoomInFactor
 
         if event.angleDelta().y() > 0:
-            zoom_factor = zoom_in_factor
-            self._zoom += 1
+            zoomFactor = zoomInFactor
+            self.zoom += 1
         else:
-            zoom_factor = zoom_out_factor
-            self._zoom -= 1
+            zoomFactor = zoomOutFactor
+            self.zoom -= 1
 
-        if self._zoom < -10:
-            self._zoom = -10
+        if self.zoom < -10:
+            self.zoom = -10
             return
-        if self._zoom > 30:
-            self._zoom = 30
+        if self.zoom > 30:
+            self.zoom = 30
             return
 
-        self.scale(zoom_factor, zoom_factor)
+        self.scale(zoomFactor, zoomFactor)
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasText():
@@ -531,19 +531,19 @@ class Image(QGraphicsView):
 
     def dropEvent(self, event: QDropEvent):
         if event.mimeData().hasText():
-            product_name = event.mimeData().text()
-            scene_pos = self.mapToScene(event.position().toPoint())
+            productName = event.mimeData().text()
+            scenePos = self.mapToScene(event.position().toPoint())
 
-            grid_x = (int(scene_pos.x()) // self.CELL_SIZE) * self.CELL_SIZE
-            grid_y = (int(scene_pos.y()) // self.CELL_SIZE) * self.CELL_SIZE
+            gridX = (int(scenePos.x()) // self.CELL_SIZE) * self.CELL_SIZE
+            gridY = (int(scenePos.y()) // self.CELL_SIZE) * self.CELL_SIZE
 
-            center_x = grid_x + self.CELL_SIZE / 2
-            center_y = grid_y + self.CELL_SIZE / 2
+            centerX = gridX + self.CELL_SIZE / 2
+            centerY = gridY + self.CELL_SIZE / 2
 
-            self.placer_produit(product_name, center_x, center_y, record_history=True)
+            self.placerProduit(productName, centerX, centerY, recordHistory=True)
 
             event.acceptProposedAction()
-            self.produit_place_signal.emit(product_name, QPointF(center_x, center_y))
+            self.produitPlaceSignal.emit(productName, QPointF(centerX, centerY))
         else:
             event.ignore()
 
@@ -565,210 +565,210 @@ class DraggableListWidget(QListWidget):
         if not (item.flags() & Qt.ItemFlag.ItemIsDragEnabled):
             return
 
-        mime_data = QMimeData()
-        mime_data.setText(item.text()) # C'est la ligne clé : s'assurer que le texte est dans le QMimeData
+        mimeData = QMimeData()
+        mimeData.setText(item.text()) # C'est la ligne clé : s'assurer que le texte est dans le QMimeData
 
         drag = QDrag(self)
-        drag.setMimeData(mime_data)
+        drag.setMimeData(mimeData)
 
         # Exécute l'opération de glisser
         drag.exec(supportedActions)
 
 class FenetreAppli(QMainWindow):
-    def __init__(self, chemin: str = None, produits_selectionnes: dict = None, questionnaire_data: dict = None):
+    def __init__(self, chemin: str = None, produitsSelectionnes: dict = None, questionnaireData: dict = None):
         super().__init__()
         self.__chemin = chemin
-        self.produits_selectionnes = produits_selectionnes if produits_selectionnes is not None else {}
-        self.positions_produits = {} 
-        self.questionnaire_data = questionnaire_data if questionnaire_data is not None else {}
+        self.produitsSelectionnes = produitsSelectionnes if produitsSelectionnes is not None else {}
+        self.positionsProduits = {} 
+        self.questionnaireData = questionnaireData if questionnaireData is not None else {}
 
         self.setWindowTitle("Gestionnaire de Magasin (Gérant)")
-        screen_geometry = QApplication.primaryScreen().availableGeometry()
-        self.setGeometry(screen_geometry)
+        screenHeometry = QApplication.primaryScreen().availableGeometry()
+        self.setGeometry(screenHeometry)
        
-        self.top_bar_widget = QWidget()
-        self.top_bar_layout = QHBoxLayout() 
-        self.top_bar_widget.setLayout(self.top_bar_layout)
-        self.top_bar_widget.setFixedHeight(90) 
+        self.topBarWidget = QWidget()
+        self.topBarLayout = QHBoxLayout() 
+        self.topBarWidget.setLayout(self.topBarLayout)
+        self.topBarWidget.setFixedHeight(90) 
         
-        self.info_stack_layout = QVBoxLayout()
-        self.info_stack_layout.setContentsMargins(0, 0, 0, 0) 
-        self.info_stack_layout.setSpacing(2) 
+        self.infoStackLayout = QVBoxLayout()
+        self.infoStackLayout.setContentsMargins(0, 0, 0, 0) 
+        self.infoStackLayout.setSpacing(2) 
 
-        self.store_name_label = QLabel("Magasin : N/A")
-        self.store_name_label.setObjectName("storeNameLabel")
-        self.store_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.store_name_label)
-        self.store_name_label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        self.storeNameLabel = QLabel("Magasin : N/A")
+        self.storeNameLabel.setObjectName("storeNameLabel")
+        self.storeNameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.infoStackLayout.addWidget(self.storeNameLabel)
+        self.storeNameLabel.setStyleSheet("font-size: 20px; font-weight: bold;")
 
-        self.gerant_name_label = QLabel("Gérant : N/A")
-        self.gerant_name_label.setObjectName("gerantNameLabel")
-        self.gerant_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.gerant_name_label)
-        self.gerant_name_label.setStyleSheet("font-size: 16px;")
+        self.gerantNameLabel = QLabel("Gérant : N/A")
+        self.gerantNameLabel.setObjectName("gerantNameLabel")
+        self.gerantNameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.infoStackLayout.addWidget(self.gerantNameLabel)
+        self.gerantNameLabel.setStyleSheet("font-size: 16px;")
 
-        self.store_address_label = QLabel("Adresse : N/A")
-        self.store_address_label.setObjectName("storeAddressLabel")
-        self.store_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.info_stack_layout.addWidget(self.store_address_label)
-        self.store_address_label.setStyleSheet("font-size: 16px;")
+        self.storeAddressLabel = QLabel("Adresse : N/A")
+        self.storeAddressLabel.setObjectName("storeAddressLabel")
+        self.storeAddressLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.infoStackLayout.addWidget(self.storeAddressLabel)
+        self.storeAddressLabel.setStyleSheet("font-size: 16px;")
 
-        self.top_bar_layout.addStretch(1) 
-        self.top_bar_layout.addLayout(self.info_stack_layout) 
-        self.top_bar_layout.addStretch(1) 
+        self.topBarLayout.addStretch(1) 
+        self.topBarLayout.addLayout(self.infoStackLayout) 
+        self.topBarLayout.addStretch(1) 
 
-        self.main_content_widget = QWidget()
-        self.main_layout = QVBoxLayout(self.main_content_widget)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(0)
+        self.mainContentWidget = QWidget()
+        self.mainLayout = QVBoxLayout(self.mainContentWidget)
+        self.mainLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainLayout.setSpacing(0)
 
-        self.main_layout.addWidget(self.top_bar_widget)
-        self.image_viewer = Image(self.__chemin)
-        self.main_layout.addWidget(self.image_viewer) 
-        self.setCentralWidget(self.main_content_widget) 
+        self.mainLayout.addWidget(self.topBarWidget)
+        self.imageViewer = Image(self.__chemin)
+        self.mainLayout.addWidget(self.imageViewer) 
+        self.setCentralWidget(self.mainContentWidget) 
 
-        self.image_viewer.produit_place_signal.connect(self.enregistrer_position_produit)
+        self.imageViewer.produitPlaceSignal.connect(self.enregistrerPositionProduit)
 
         self.dock = QDockWidget('Produits à placer')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
         self.dock.setMaximumWidth(400)
 
-        self.liste_produits_dock = DraggableListWidget()
-        self.dock.setWidget(self.liste_produits_dock)
+        self.listeProduitsDock = DraggableListWidget()
+        self.dock.setWidget(self.listeProduitsDock)
 
-        self.afficher_produits_dans_dock()
+        self.afficherProduitsDansDock()
 
-        self.barre_etat = QStatusBar()
-        self.setStatusBar(self.barre_etat)
-        self.barre_etat.showMessage("Application démarrée. Choisissez un plan et placez les produits.", 2000)
+        self.barreEtat = QStatusBar()
+        self.setStatusBar(self.barreEtat)
+        self.barreEtat.showMessage("Application démarrée. Choisissez un plan et placez les produits.", 2000)
 
-        menu_bar = self.menuBar()
-        menu_fichier = menu_bar.addMenu('&Fichier')
-        menu_edition = menu_bar.addMenu('&Edition')
-        menu_affichage = menu_bar.addMenu('&Affichage')
+        menuBar = self.menuBar()
+        menuFichier = menuBar.addMenu('&Fichier')
+        menuEdition = menuBar.addMenu('&Edition')
+        menuAffichage = menuBar.addMenu('&Affichage')
 
-        menu_fichier.addAction('Nouveau plan', self.nouveau)
-        menu_fichier.addAction('Ouvrir un plan', self.ouvrir)
-        menu_fichier.addAction('Enregistrer les positions temporaires', self.enregistrer_positions) 
-        menu_fichier.addAction('Enregistrer le plan final', self.enregistrer_plan_final) 
-        menu_fichier.addSeparator()
-        menu_fichier.addAction('Quitter', QCoreApplication.instance().quit) 
+        menuFichier.addAction('Nouveau plan', self.nouveau)
+        menuFichier.addAction('Ouvrir un plan', self.ouvrir)
+        menuFichier.addAction('Enregistrer les positions temporaires', self.enregistrerPositions) 
+        menuFichier.addAction('Enregistrer le plan final', self.enregistrerPlanFinal) 
+        menuFichier.addSeparator()
+        menuFichier.addAction('Quitter', QCoreApplication.instance().quit) 
 
-        self.action_undo = menu_edition.addAction('Annuler', self.annuler_action)
-        self.action_redo = menu_edition.addAction('Rétablir', self.refaire_action)
-        self.action_undo.setShortcut('Ctrl+Z')
-        self.action_redo.setShortcut('Ctrl+Y')
-        self.mettre_a_jour_derniere_action() 
+        self.actionUndo = menuEdition.addAction('Annuler', self.annulerAction)
+        self.actionRedo = menuEdition.addAction('Rétablir', self.refaireAction)
+        self.actionUndo.setShortcut('Ctrl+Z')
+        self.actionRedo.setShortcut('Ctrl+Y')
+        self.mettreAJourDerniereAction() 
 
-        self.action_toggle_dock = menu_affichage.addAction('Afficher/Masquer la liste des produits', self.basculer_liste_produits)
-        self.action_toggle_dock.setCheckable(True)
-        self.action_toggle_dock.setChecked(True) 
+        self.actionToggleDock = menuAffichage.addAction('Afficher/Masquer la liste des produits', self.basculerListeProduits)
+        self.actionToggleDock.setCheckable(True)
+        self.actionToggleDock.setChecked(True) 
 
         self.showMaximized()
 
-        self.mettre_a_jour_magasin() 
+        self.mettreAJourMagasin() 
 
-    def mettre_a_jour_magasin(self):
+    def mettreAJourMagasin(self):
         """Updates all the QLabels in the top bar with data from questionnaire_data."""
-        nom_magasin = self.questionnaire_data.get("nom_magasin", "N/A")
-        auteur = self.questionnaire_data.get("auteur", "N/A")
-        adresse_magasin = self.questionnaire_data.get("adresse_magasin", "N/A")
+        nomMagasin = self.questionnaireData.get("nom_magasin", "N/A")
+        auteur = self.questionnaireData.get("auteur", "N/A")
+        adresseMagasin = self.questionnaireData.get("adresse_magasin", "N/A")
 
-        self.store_name_label.setText(f"Magasin : {nom_magasin}")
-        self.gerant_name_label.setText(f"Gérant : {auteur}")
-        self.store_address_label.setText(f"Adresse : {adresse_magasin}")
+        self.storeNameLabel.setText(f"Magasin : {nomMagasin}")
+        self.gerantNameLabel.setText(f"Gérant : {auteur}")
+        self.storeAddressLabel.setText(f"Adresse : {adresseMagasin}")
 
-    def mettre_a_jour_derniere_action(self):
-        self.action_undo.setEnabled(self.image_viewer._history_index >= 0)
-        self.action_redo.setEnabled(self.image_viewer._history_index + 1 < len(self.image_viewer._product_positions_history))
+    def mettreAJourDerniereAction(self):
+        self.actionUndo.setEnabled(self.imageViewer.historyIndex >= 0)
+        self.actionRedo.setEnabled(self.imageViewer.historyIndex + 1 < len(self.imageViewer.productPositionsHistory))
 
-    def afficher_produits_dans_dock(self):
-        self.liste_produits_dock.clear()
-        if not self.produits_selectionnes:
+    def afficherProduitsDansDock(self):
+        self.listeProduitsDock.clear()
+        if not self.produitsSelectionnes:
             item = QListWidgetItem("Aucun produit sélectionné dans le questionnaire.")
             item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEnabled & ~Qt.ItemFlag.ItemIsDragEnabled & ~Qt.ItemFlag.ItemIsSelectable)
-            self.liste_produits_dock.addItem(item)
+            self.listeProduitsDock.addItem(item)
             return
 
-        for categorie, produits in self.produits_selectionnes.items():
-            category_item = QListWidgetItem(f"--- {categorie} ---")
-            category_item.setFlags(category_item.flags() & ~Qt.ItemFlag.ItemIsDragEnabled & ~Qt.ItemFlag.ItemIsSelectable)
-            category_item.setForeground(QBrush(QColor("blue")))
-            self.liste_produits_dock.addItem(category_item)
+        for categorie, produits in self.produitsSelectionnes.items():
+            categoryItem = QListWidgetItem(f"--- {categorie} ---")
+            categoryItem.setFlags(categoryItem.flags() & ~Qt.ItemFlag.ItemIsDragEnabled & ~Qt.ItemFlag.ItemIsSelectable)
+            categoryItem.setForeground(QBrush(QColor("blue")))
+            self.listeProduitsDock.addItem(categoryItem)
 
             for produit in produits:
                 item = QListWidgetItem(produit)
                 item.setFlags(item.flags() | Qt.ItemFlag.ItemIsDragEnabled | Qt.ItemFlag.ItemIsSelectable)
-                self.liste_produits_dock.addItem(item)
+                self.listeProduitsDock.addItem(item)
 
-    def enregistrer_position_produit(self, product_name: str, position: QPointF):
-        self.positions_produits[product_name] = {'x': position.x(), 'y': position.y()}
-        self.barre_etat.showMessage(f"Produit '{product_name}' placé à ({position.x():.0f}, {position.y():.0f})", 3000)
-        self.mettre_a_jour_derniere_action()
+    def enregistrerPositionProduit(self, productName: str, position: QPointF):
+        self.positionsProduits[productName] = {'x': position.x(), 'y': position.y()}
+        self.barreEtat.showMessage(f"Produit '{productName}' placé à ({position.x():.0f}, {position.y():.0f})", 3000)
+        self.mettreAJourDerniereAction()
 
     #Fonction pour vérifier si l'utilisateur peut retourner ou non en arrière
-    def annuler_action(self):
-        if self.image_viewer.enlever_derniere_action():
-            self.positions_produits.clear()
+    def annulerAction(self):
+        if self.imageViewer.enleverDerniereAction():
+            self.positionsProduits.clear()
             
              #Recherche dans l'historique l'action a annuler
-            for product_name, pos in self.image_viewer._product_positions_history[:self.image_viewer._history_index + 1]:
-                self.positions_produits[product_name] = {'x': pos.x(), 'y': pos.y()}
-            self.barre_etat.showMessage("Action annulée.", 2000) #Message affiché si l'action a été supprimée
+            for productName, pos in self.imageViewer.productPositionsHistory[:self.imageViewer.historyIndex + 1]:
+                self.positionsProduits[productName] = {'x': pos.x(), 'y': pos.y()}
+            self.barreEtat.showMessage("Action annulée.", 2000) #Message affiché si l'action a été supprimée
         else:
-            self.barre_etat.showMessage("Aucune action à annuler.", 2000) #Pas d'action à annuler
-        self.mettre_a_jour_derniere_action()
+            self.barreEtat.showMessage("Aucune action à annuler.", 2000) #Pas d'action à annuler
+        self.mettreAJourDerniereAction()
     #Fonction pour rétablir l'action annulée juste avant
-    def refaire_action(self):
-        if self.image_viewer.rajouter_derniere_action():
+    def refaireAction(self):
+        if self.imageViewer.rajouterDerniereAction():
             #Recherche dans l'historique l'action à rétablir
-            product_name, pos = self.image_viewer._product_positions_history[self.image_viewer._history_index]
-            self.positions_produits[product_name] = {'x': pos.x(), 'y': pos.y()}
-            self.barre_etat.showMessage("Action rétablie.", 2000) #Message affiché si l'action a été rétablie
+            productName, pos = self.imageViewer.productPositionsHistory[self.imageViewer.historyIndex]
+            self.positionsProduits[productName] = {'x': pos.x(), 'y': pos.y()}
+            self.barreEtat.showMessage("Action rétablie.", 2000) #Message affiché si l'action a été rétablie
         else:
-            self.barre_etat.showMessage("Aucune action à rétablir.", 2000) #Pas d'action à rétablir
-        self.mettre_a_jour_derniere_action()
+            self.barreEtat.showMessage("Aucune action à rétablir.", 2000) #Pas d'action à rétablir
+        self.mettreAJourDerniereAction()
 
     #Fonction pour afficher ou masquer la liste des produits sur l'interface
-    def basculer_liste_produits(self):
+    def basculerListeProduits(self):
         
         #Action pour masquer la liste des produits
         if self.dock.isVisible():
             self.dock.hide()
-            self.action_toggle_dock.setChecked(False)
-            self.barre_etat.showMessage("Liste des produits masquée.", 2000)
+            self.actionToggleDock.setChecked(False)
+            self.barreEtat.showMessage("Liste des produits masquée.", 2000)
         else:
             #Action pour afficher la liste des produits
             self.dock.show()
-            self.action_toggle_dock.setChecked(True)
-            self.barre_etat.showMessage("Liste des produits affichée.", 2000)
+            self.actionToggleDock.setChecked(True)
+            self.barreEtat.showMessage("Liste des produits affichée.", 2000)
 
     #Fonction qui enregistre les positions temporaires des produits dans un fichier JSON
-    def enregistrer_positions(self):
-        if not self.positions_produits: #si il n'y a pas de produit placé sur le plan
+    def enregistrerPositions(self):
+        if not self.positionsProduits: #si il n'y a pas de produit placé sur le plan
             QMessageBox.information(self, "Enregistrer les positions temporaires", "Aucun produit n'a été placé pour être enregistré temporairement.")
             return #Quitte la fonction comme il y a rien a enregistrer
         #Enregistre la ou le fichier JSON sera enregistré
 
-        file_path, _ = QFileDialog.getSaveFileName(self, "Enregistrer les positions temporaires des produits",
+        filePath, _ = QFileDialog.getSaveFileName(self, "Enregistrer les positions temporaires des produits",
                                                  "positions_temp.json",
                                                  "JSON Files (*.json)")
-        if file_path: #vérifie que l'utilisateur a choisi un fichier
+        if filePath: #vérifie que l'utilisateur a choisi un fichier
             try:
                 #Ecrit dans le fichier JSON les positions des produits
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    serializable_positions = {
+                with open(filePath, 'w', encoding='utf-8') as f:
+                    serializablePositions = {
                         name: {'x': pos['x'], 'y': pos['y']}
-                        for name, pos in self.positions_produits.items()
+                        for name, pos in self.positionsProduits.items()
                     }
-                    json.dump(serializable_positions, f, indent=4, ensure_ascii=False)
-                self.barre_etat.showMessage(f"Positions temporaires enregistrées dans {file_path}", 3000)
+                    json.dump(serializablePositions, f, indent=4, ensure_ascii=False)
+                self.barreEtat.showMessage(f"Positions temporaires enregistrées dans {filePath}", 3000)
                 #Exception pour capturer toutes les erreurs possibles pendant l'enregistrement
             except Exception as e:
                 #Message d'erreur
                 QMessageBox.critical(self, "Erreur d'enregistrement", f"Impossible d'enregistrer les positions temporaires:\n{e}")
 
-    def enregistrer_plan_final(self):
+    def enregistrerPlanFinal(self):
         #Sauvegarde les données complètes du projet : questionnaire, produits sélectionnés, le chemin de l'image du plan et les positions du produit final.
 
         #Vérifie si le plan a été chargé correctement
@@ -777,37 +777,37 @@ class FenetreAppli(QMainWindow):
             return
 
         #Vérifie si des produits ont été sélectionnés
-        if not self.produits_selectionnes:
+        if not self.produitsSelectionnes:
             QMessageBox.warning(self, "Enregistrer le plan final", "Aucun produit n'a été sélectionné pour le magasin.")
             return
 
         #Vérifie si des produits ont été placés sur le plan
-        if not self.positions_produits:
+        if not self.positionsProduits:
             QMessageBox.warning(self, "Enregistrer le plan final", "Aucun produit n'a été placé sur le plan.")
             return
 
         #Création du dictionnaire qui contient les données
-        project_data = {
-            "questionnaire_info": self.questionnaire_data,
+        projectData = {
+            "questionnaire_info": self.questionnaireData,
             "chemin_image_plan": self.__chemin,
-            "produits_selectionnes": self.produits_selectionnes,
+            "produits_selectionnes": self.produitsSelectionnes,
             "positions_produits_finales": {
                 name: {'x': pos['x'], 'y': pos['y']}
-                for name, pos in self.positions_produits.items()
+                for name, pos in self.positionsProduits.items()
             }
         }
 
         #Choisir ou enregistrer le fihcier JSON
-        file_path, _ = QFileDialog.getSaveFileName(self, "Enregistrer le plan final du magasin",
+        filePath, _ = QFileDialog.getSaveFileName(self, "Enregistrer le plan final du magasin",
                                                  "mon_magasin_final.json",
                                                  "Fichiers Magasin (*.json)")
-        if file_path:
+        if filePath:
             try:
                 #Ecrit dans le fichier JSON les données du projet
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    json.dump(project_data, f, indent=4, ensure_ascii=False)
-                self.barre_etat.showMessage(f"Plan final enregistré dans {file_path}", 5000)
-                QMessageBox.information(self, "Enregistrement réussi", f"Le plan final du magasin a été enregistré dans :\n{file_path}")
+                with open(filePath, 'w', encoding='utf-8') as f:
+                    json.dump(projectData, f, indent=4, ensure_ascii=False)
+                self.barreEtat.showMessage(f"Plan final enregistré dans {filePath}", 5000)
+                QMessageBox.information(self, "Enregistrement réussi", f"Le plan final du magasin a été enregistré dans :\n{filePath}")
                 
                 #Exception pour capturer toutes les erreurs possibles pendant l'enregistrement
             except Exception as e:
@@ -817,64 +817,64 @@ class FenetreAppli(QMainWindow):
 
 
     def nouveau(self):
-        self.barre_etat.showMessage('Création d\'un nouveau plan...', 2000)
+        self.barreEtat.showMessage('Création d\'un nouveau plan...', 2000)
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(self, "Sélectionner un nouveau plan de magasin",
                                                  directory = os.path.join(sys.path[0]),
                                                  filter="Images (*.png *.jpg *.jpeg *.bmp *.gif)")
         if validation:
             self.__chemin = chemin
-            self.image_viewer.setPixmap(QPixmap(self.__chemin))
-            self.positions_produits.clear()
-            self.image_viewer._product_positions_history = [] 
-            self.image_viewer._history_index = -1
-            self.mettre_a_jour_derniere_action()
-            self.barre_etat.showMessage('Nouveau plan chargé. Vous pouvez placer des produits.', 2000)
+            self.imageViewer.setPixmap(QPixmap(self.__chemin))
+            self.positionsProduits.clear()
+            self.imageViewer.productPositionsHistory = [] 
+            self.imageViewer.historyIndex = -1
+            self.mettreAJourDerniereAction()
+            self.barreEtat.showMessage('Nouveau plan chargé. Vous pouvez placer des produits.', 2000)
         else:
-            self.barre_etat.showMessage('Création de nouveau plan annulée.', 2000)
+            self.barreEtat.showMessage('Création de nouveau plan annulée.', 2000)
 
     def ouvrir(self):
-        self.barre_etat.showMessage('Ouvrir un plan existant....', 2000)
-        file_path, _ = QFileDialog.getOpenFileName(self, "Ouvrir un plan de magasin enregistré",
+        self.barreEtat.showMessage('Ouvrir un plan existant....', 2000)
+        filePath, _ = QFileDialog.getOpenFileName(self, "Ouvrir un plan de magasin enregistré",
                                                  "", 
                                                  "Fichiers Magasin (*.json)")
-        if file_path:
+        if filePath:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    project_data = json.load(f)
+                with open(filePath, 'r', encoding='utf-8') as f:
+                    projectData = json.load(f)
 
-                chemin_image = project_data.get("chemin_image_plan")
-                if not os.path.exists(chemin_image):
-                    QMessageBox.warning(self, "Erreur", f"L'image du plan '{chemin_image}' n'a pas été trouvée. Veuillez la replacer ou choisir un nouveau plan.")
+                cheminImage = projectData.get("chemin_image_plan")
+                if not os.path.exists(cheminImage):
+                    QMessageBox.warning(self, "Erreur", f"L'image du plan '{cheminImage}' n'a pas été trouvée. Veuillez la replacer ou choisir un nouveau plan.")
                     return
 
-                self.__chemin = chemin_image
-                self.image_viewer.setPixmap(QPixmap(self.__chemin))
+                self.__chemin = cheminImage
+                self.imageViewer.setPixmap(QPixmap(self.__chemin))
 
-                self.questionnaire_data = project_data.get("questionnaire_info", {})
-                self.mettre_a_jour_magasin() 
+                self.questionnaireData = projectData.get("questionnaire_info", {})
+                self.mettreAJourMagasin() 
 
-                self.produits_selectionnes = project_data.get("produits_selectionnes", {})
-                self.afficher_produits_dans_dock()
+                self.produitsSelectionnes = projectData.get("produits_selectionnes", {})
+                self.afficherProduitsDansDock()
 
-                self.positions_produits.clear()
-                self.image_viewer._product_positions_history = [] 
-                self.image_viewer._history_index = -1
+                self.positionsProduits.clear()
+                self.imageViewer.productPositionsHistory = [] 
+                self.imageViewer.historyIndex = -1
                 
-                for item_graphic in list(self.image_viewer._product_text_items.values()):
-                    self.image_viewer._scene.removeItem(item_graphic)
-                self.image_viewer._product_text_items.clear()
+                for itemGraphic in list(self.imageViewer.productTextItems.values()):
+                    self.imageViewer.scene.removeItem(itemGraphic)
+                self.imageViewer.productTextItems.clear()
 
-                loaded_positions = project_data.get("positions_produits_finales", {})
-                for product_name, pos_data in loaded_positions.items():
-                    x = pos_data.get('x')
-                    y = pos_data.get('y')
+                loadedPositions = projectData.get("positions_produits_finales", {})
+                for productName, posData in loadedPositions.items():
+                    x = posData.get('x')
+                    y = posData.get('y')
                     if x is not None and y is not None:
-                        self.image_viewer.placer_produit(product_name, x, y, record_history=True)
-                        self.positions_produits[product_name] = {'x': x, 'y': y}
+                        self.imageViewer.placerProduit(productName, x, y, recordHistory=True)
+                        self.positionsProduits[productName] = {'x': x, 'y': y}
 
-                self.barre_etat.showMessage(f"Plan chargé: {file_path}", 3000)
-                self.mettre_a_jour_derniere_action()
+                self.barreEtat.showMessage(f"Plan chargé: {filePath}", 3000)
+                self.mettreAJourDerniereAction()
 
 
             except json.JSONDecodeError:
@@ -882,7 +882,7 @@ class FenetreAppli(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Erreur d'ouverture", f"Impossible d'ouvrir le plan:\n{e}")
         else:
-            self.barre_etat.showMessage('Ouverture de plan annulée.', 2000)
+            self.barreEtat.showMessage('Ouverture de plan annulée.', 2000)
 
 
 # Gestionnaire de navigation entre pages
@@ -890,55 +890,55 @@ class AppMultiPages(QStackedWidget):
     def __init__(self):
         super().__init__()
 
-        self.page_questionnaire = PageQuestionnaire(self.aller_a_choisir_produits)
-        self.addWidget(self.page_questionnaire)  # index 0
+        self.pageQuestionnaire = PageQuestionnaire(self.allerAChoisirProduits)
+        self.addWidget(self.pageQuestionnaire)  # index 0
 
-        self.choisir_produits = ChoisirProduits()
-        self.choisir_produits.selection_validee.connect(self.aller_a_fenetre_appli)
-        self.addWidget(self.choisir_produits) # index 1
+        self.choisirProduits = ChoisirProduits()
+        self.choisirProduits.selectionValidee.connect(self.allerAFenetreAppli)
+        self.addWidget(self.choisirProduits) # index 1
 
-        self.fenetre_appli = None
+        self.fenetreAppli = None
 
         self.setCurrentIndex(0)
 
-    def aller_a_choisir_produits(self):
+    def allerAChoisirProduits(self):
         self.setCurrentIndex(1)
-        self.choisir_produits.charger_produits()
+        self.choisirProduits.chargerProduits()
 
-    def aller_a_fenetre_appli(self, produits_selectionnes: dict):
-        chemin_image = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Quadrillage_Final.jpg')
-        questionnaire_data = self.page_questionnaire.get_questionnaire_data() 
+    def allerAFenetreAppli(self, produitsSelectionnes: dict):
+        cheminImage = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Quadrillage_Final.jpg')
+        questionnaireData = self.pageQuestionnaire.getQuestionnaireData() 
 
-        if self.fenetre_appli is None:
-            self.fenetre_appli = FenetreAppli(
-                chemin=chemin_image,
-                produits_selectionnes=produits_selectionnes,
-                questionnaire_data=questionnaire_data 
+        if self.fenetreAppli is None:
+            self.fenetreAppli = FenetreAppli(
+                chemin=cheminImage,
+                produitsSelectionnes=produitsSelectionnes,
+                questionnaireData=questionnaireData 
             )
-            self.addWidget(self.fenetre_appli)  # index 2
+            self.addWidget(self.fenetreAppli)  # index 2
         else:
-            self.fenetre_appli.produits_selectionnes = produits_selectionnes
-            self.fenetre_appli.questionnaire_data = questionnaire_data 
-            self.fenetre_appli.afficher_produits_dans_dock()
-            self.fenetre_appli.positions_produits.clear()
-            self.fenetre_appli.image_viewer._product_positions_history = [] 
-            self.fenetre_appli.image_viewer._history_index = -1
-            for item in list(self.fenetre_appli.image_viewer._product_text_items.values()):
-                self.fenetre_appli.image_viewer._scene.removeItem(item)
-            self.fenetre_appli.image_viewer._product_text_items.clear()
-            self.fenetre_appli.image_viewer._draw_grid_overlay() 
-            self.fenetre_appli.mettre_a_jour_magasin() 
-            self.fenetre_appli.mettre_a_jour_derniere_action()
+            self.fenetreAppli.produitsSelectionnes = produitsSelectionnes
+            self.fenetreAppli.questionnaireData = questionnaireData 
+            self.fenetreAppli.afficherProduitsDansDock()
+            self.fenetreAppli.positionsProduits.clear()
+            self.fenetreAppli.imageViewer.productPositionsHistory = [] 
+            self.fenetreAppli.imageViewer.historyIndex = -1
+            for item in list(self.fenetreAppli.imageViewer.productTextItems.values()):
+                self.fenetreAppli.imageViewer.Scene.removeItem(item)
+            self.fenetreAppli.imageViewer.productTextItems.clear()
+            self.fenetreppli.imageViewer.drawGridOverlay() 
+            self.fenetreAppli.mettreAJourMagasin() 
+            self.fenetreAppli.mettreAJourDerniereAction()
 
 
         self.setCurrentIndex(2)
 
 # Mise en place d'un mot de passe pour accéder à l'application gérant
 class FenetreConnexion(QWidget):
-    def __init__(self, mot_de_passe_attendu, callback_connexion):
+    def __init__(self, motDePasseAttendu, callbackConnexion):
         super().__init__()
-        self.mot_de_passe_attendu = mot_de_passe_attendu
-        self.callback_connexion = callback_connexion
+        self.motDePasseAttendu = motDePasseAttendu
+        self.callbackConnexion = callbackConnexion
 
         self.setWindowTitle("Connexion")
         self.setFixedSize(300, 150)
@@ -946,22 +946,22 @@ class FenetreConnexion(QWidget):
         layout = QVBoxLayout()
 
         label = QLabel("Entrez le mot de passe :")
-        self.champ_mdp = QLineEdit()
-        self.champ_mdp.setEchoMode(QLineEdit.EchoMode.Password) #Cache le mot de passe entré
+        self.champMdp = QLineEdit()
+        self.champMdp.setEchoMode(QLineEdit.EchoMode.Password) #Cache le mot de passe entré
 
-        bouton_connexion = QPushButton("Se connecter")
-        bouton_connexion.clicked.connect(self.verifier_mdp) #Pour vérifier si le mot de passe est correct
+        boutonConnexion = QPushButton("Se connecter")
+        boutonConnexion.clicked.connect(self.verifierMdp) #Pour vérifier si le mot de passe est correct
 
         layout.addWidget(label)
-        layout.addWidget(self.champ_mdp)
-        layout.addWidget(bouton_connexion)
+        layout.addWidget(self.champMdp)
+        layout.addWidget(boutonConnexion)
 
         self.setLayout(layout)
 
 # Fonction qui permet de vérifier si le mot de passe entré est correct ou non
-    def verifier_mdp(self):
-        if self.champ_mdp.text() == self.mot_de_passe_attendu:
-            self.callback_connexion()
+    def verifierMdp(self):
+        if self.champMdp.text() == self.motDePasseAttendu:
+            self.callbackConnexion()
             self.close() #si mot de passe correct, on ferme la fenêtre de connexion et on lance la "vraie" application
         else:
             QMessageBox.critical(self, "Erreur", "Mot de passe incorrect.") #mot de passe incorrect, message d'erreur + faut recommencer
@@ -970,13 +970,13 @@ class FenetreConnexion(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    def lancer_application():
-        multi_pages = AppMultiPages()
-        multi_pages.setWindowTitle("Application Gérant de Magasin")
-        multi_pages.resize(1280, 720)
-        multi_pages.show()
+    def lancerApplication():
+        multiPages = AppMultiPages()
+        multiPages.setWindowTitle("Application Gérant de Magasin")
+        multiPages.resize(1280, 720)
+        multiPages.show()
 
-    fenetre_connexion = FenetreConnexion("SAE_Graphes", lancer_application)
-    fenetre_connexion.show()
+    fenetreConnexion = FenetreConnexion("SAE_Graphes", lancerApplication)
+    fenetreConnexion.show()
 
     sys.exit(app.exec())
