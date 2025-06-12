@@ -6,103 +6,103 @@ from collections import defaultdict
 
 class ModeleMagasin:
     def __init__(self):
-        self._infos_magasin = {
+        self.infosMagasin = {
             "nom_magasin": "Aucun plan chargé",
             "auteur": "N/A",
             "adresse_magasin": "N/A"
         }
-        self._chemin_image_carte = None
-        self._produits_disponibles = defaultdict(list) # Catégorie -> [noms des produits]
-        self._positions_produits = {} # Nom du produit -> {'x': float, 'y': float}
-        self._liste_courses = [] # Liste des noms de produits
+        self.cheminImageCarte = None
+        self.produitsDisponibles = defaultdict(list) # Catégorie -> [noms des produits]
+        self.positionsProduits = {} # Nom du produit -> {'x': float, 'y': float}
+        self.listeCourses = [] # Liste des noms de produits
 
     # --- Propriétés pour accéder aux données ---
     @property
     def infos_magasin(self):
-        return self._infos_magasin
+        return self.infosMagasin
 
     @property
     def chemin_image_carte(self):
-        return self._chemin_image_carte
+        return self.cheminImageCarte
 
     @property
     def produits_disponibles(self):
-        return self._produits_disponibles
+        return self.produitsDisponibles
 
     @property
     def positions_produits(self):
-        return self._positions_produits
+        return self.positionsProduits
 
     @property
     def liste_courses(self):
-        return self._liste_courses[:] # Retourne une copie pour éviter les modifications externes
+        return self.listeCourses[:] # Retourne une copie pour éviter les modifications externes
 
     # --- Chargement / Enregistrement des données ---
-    def charger_plan_magasin(self, chemin_fichier: str):
+    def chargerPlanMagasin(self, cheminFichier: str):
         """
         Charge les données du plan du magasin à partir d'un fichier JSON.
         Retourne (succès: bool, message: str)
         """
-        if not chemin_fichier:
+        if not cheminFichier:
             return False, "Ouverture annulée."
 
         try:
-            with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                donnees_projet = json.load(f)
+            with open(cheminFichier, 'r', encoding='utf-8') as f:
+                donneesProjet = json.load(f)
 
             # Mettre à jour les informations du magasin
-            self._infos_magasin = donnees_projet.get("questionnaire_info", {})
+            self.infosMagasin = donneesProjet.get("questionnaire_info", {})
             
             # Mettre à jour le chemin de l'image de la carte
-            chemin_image = donnees_projet.get("chemin_image_plan")
-            if not os.path.exists(chemin_image):
-                return False, f"Image de la carte '{chemin_image}' introuvable. Veuillez vérifier le chemin ou charger un autre plan."
-            self._chemin_image_carte = chemin_image
+            cheminImage = donneesProjet.get("chemin_image_plan")
+            if not os.path.exists(cheminImage):
+                return False, f"Image de la carte '{cheminImage}' introuvable. Veuillez vérifier le chemin ou charger un autre plan."
+            self.cheminImageCarte = cheminImage
 
             # Mettre à jour les produits disponibles
-            self._produits_disponibles = defaultdict(list, donnees_projet.get("produits_selectionnes", {}))
+            self.produitsDisponibles = defaultdict(list, donneesProjet.get("produits_selectionnes", {}))
 
             # Mettre à jour les positions des produits
-            self._positions_produits = donnees_projet.get("positions_produits_finales", {})
+            self.positionsProduits = donneesProjet.get("positions_produits_finales", {})
             
             # Effacer la liste de courses lorsqu'un nouveau plan de magasin est chargé
-            self._liste_courses.clear()
+            self.listeCourses.clear()
 
-            return True, f"Plan du magasin chargé avec succès depuis {chemin_fichier}"
+            return True, f"Plan du magasin chargé avec succès depuis {cheminFichier}"
 
         except json.JSONDecodeError:
             return False, "Le fichier sélectionné n'est pas un fichier JSON valide."
         except Exception as e:
             return False, f"Échec du chargement du plan du magasin : {e}"
 
-    def ajouterProduitAListeCourses(self, nom_produit: str):
+    def ajouterProduitAListeCourses(self, nomProduit: str):
         """Ajoute un produit à la liste de courses."""
-        self._liste_courses.append(nom_produit)
+        self.listeCourses.append(nomProduit)
 
     def retirerProduitsDeListeCourses(self, noms_produits: list[str]):
         """Supprime les produits spécifiés de la liste de courses.
         Si plusieurs instances du même produit existent, une instance par nom fourni est supprimée.
         """
-        for nom_produit in noms_produits:
-            if nom_produit in self._liste_courses:
-                self._liste_courses.remove(nom_produit)
+        for nomProduit in noms_produits:
+            if nomProduit in self.listeCourses:
+                self.listeCourses.remove(nomProduit)
 
     def effacerListeCourses(self):
         """Efface tous les produits de la liste de courses."""
-        self._liste_courses.clear()
+        self.listeCourses.clear()
 
-    def enregistrerListeCourses(self, chemin_fichier: str):
+    def enregistrerListeCourses(self, cheminFichier: str):
         """
         Enregistre la liste de courses actuelle dans un fichier texte.
         Retourne (succès: bool, message: str)
         """
-        if not self._liste_courses:
+        if not self.listeCourses:
             return False, "La liste de courses est vide et ne peut pas être enregistrée."
 
         try:
-            with open(chemin_fichier, 'w', encoding='utf-8') as f:
-                for produit in self._liste_courses:
+            with open(cheminFichier, 'w', encoding='utf-8') as f:
+                for produit in self.listeCourses:
                     f.write(produit + '\n')
-            return True, f"Liste de courses enregistrée dans {chemin_fichier}"
+            return True, f"Liste de courses enregistrée dans {cheminFichier}"
         except Exception as e:
             return False, f"Échec de l'enregistrement de la liste de courses : {e}"
