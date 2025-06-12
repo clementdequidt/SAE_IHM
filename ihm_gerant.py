@@ -9,11 +9,12 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QIcon, QDrag, QMouseEvent, QWheelEvent, QPainter, QBrush, QColor, QFont, QDragMoveEvent
 from PyQt6.QtCore import Qt, QDate, QPointF, QRectF, pyqtSignal, QMimeData
 
-# --- Détection du thème système ---
+
+#Fonction pour détecter le système d'exploitation du client
 def detecter_theme_systeme():
     if platform.system() == "Windows":
         try:
-            import winreg
+            import winreg #importation de winreg pour lire, écrire et modifier le registre de Windows
             registry = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
             key_path = r'SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
             key = winreg.OpenKey(registry, key_path)
@@ -22,6 +23,7 @@ def detecter_theme_systeme():
         except Exception:
             return "clair"
     return "clair"
+#Si le système d'exploitation est différents de windows la couleur est de base blanche
 
 # --- Page de questionnaire ---
 class PageQuestionnaire(QWidget):
@@ -29,37 +31,39 @@ class PageQuestionnaire(QWidget):
         super().__init__()
         self.switch_callback = switch_callback
 
-        form_layout = QVBoxLayout()
+        form_layout = QVBoxLayout() #layout vertical pour structurer le questionnaire
         form_layout.setContentsMargins(40, 40, 40, 40)
-        form_layout.setSpacing(15)
+        form_layout.setSpacing(15) #Espacement de 15 entre chaque layout
 
-        title = QLabel("Création d'un nouveau magasin")
-        title.setStyleSheet("font-size: 24px; font-weight: bold;")
+        title = QLabel("Création d'un nouveau magasin") #Label pour préciser ce que l'on fais
+        title.setStyleSheet("font-size: 24px; font-weight: bold;") #Police utilisé, caractère, taille et mise en gras
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         form_layout.addWidget(title)
 
-        self.projet_input = self._add_labeled_input("Nom du projet :", "Saisissez le nom du projet", form_layout)
-        self.auteur_input = self._add_labeled_input("Votre nom :", "Saisissez votre nom", form_layout)
+        self.projet_input = self._add_labeled_input("Nom du projet :", "Saisissez le nom du projet", form_layout) #Ajout d'un label pour saisir le nom du projet
+        self.auteur_input = self._add_labeled_input("Votre nom :", "Saisissez votre nom", form_layout) #Ajout d'un label pour saisir notre nom 
 
-        form_layout.addWidget(QLabel("Date de création :"))
-        self.date_input = QDateEdit()
-        self.date_input.setCalendarPopup(True)
-        self.date_input.setDate(QDate.currentDate())
+        form_layout.addWidget(QLabel("Date de création :")) #Ajout d'un label pour préciser que l'on doit mettre la date de création
+        self.date_input = QDateEdit() #Un input QDateEdit pour ajouter la date de création du magasin
+        self.date_input.setCalendarPopup(True) #Apparition d'un calendrier pour faciliter l'utilisateur
+        self.date_input.setDate(QDate.currentDate()) #Quand on crée un nouveau magasin la date actuelle ou l'on lance l'appli apparait
         form_layout.addWidget(self.date_input)
 
-        self.nom_magasin_input = self._add_labeled_input("Nom du magasin :", "Nom du magasin", form_layout)
-        self.adresse_magasin_input = self._add_labeled_input("Adresse du magasin :", "Adresse complète", form_layout)
+        self.nom_magasin_input = self._add_labeled_input("Nom du magasin :", "Nom du magasin", form_layout) #Ajout d'un label pour saisir le nom du magasin
+        self.adresse_magasin_input = self._add_labeled_input("Adresse du magasin :", "Adresse complète", form_layout) #Ajout d'un label pour saisir l'adresse du magasin
 
-        btn_valider = QPushButton("Valider")
-        btn_valider.clicked.connect(self.verifier_et_passer)
+        btn_valider = QPushButton("Valider") #Un bouton pour valider
+        btn_valider.clicked.connect(self.verifier_et_passer) #Appel d'une fonction, si tout les champs
+        #sont complé alors on peut passer sinon on ne peut pas valider
         form_layout.addWidget(btn_valider)
 
-        outer_layout = QVBoxLayout()
+        outer_layout = QVBoxLayout() #Ajout d'un layout vertical
         outer_layout.addStretch()
         outer_layout.addLayout(form_layout)
         outer_layout.addStretch()
         self.setLayout(outer_layout)
-
+        
+        #On définit la taille de police des label, des lineEdit,DateEdit et des Bouttons
         self.setStyleSheet("""
             QLabel {
                 font-size: 14px;
@@ -90,7 +94,7 @@ class PageQuestionnaire(QWidget):
         line.setPlaceholderText(placeholder)
         layout.addWidget(line)
         return line
-
+    #Si tout les champs ne sont pas vérifier et rempli alors on renvoie un warning pour dire que les champs sont nécessaires
     def verifier_et_passer(self):
         if not all([
             self.projet_input.text().strip(),
@@ -102,23 +106,23 @@ class PageQuestionnaire(QWidget):
             return
         self.switch_callback()
         
-# --- Choisir les produits disponibles dans le magasin ---
+#Choisir les produits disponibles dans le magasin
 class ChoisirProduits(QWidget):
     selection_validee = pyqtSignal(dict) 
 
-    def __init__(self, fichier_produits='liste_produits.json'):
+    def __init__(self, fichier_produits='liste_produits.json'): #Appelle de la liste de produits (la même que celle donner par le prof)
         super().__init__()
         self.setWindowTitle("Choisir les produits disponibles")
         self.setGeometry(100, 100, 600, 500)
 
         self.fichier_produits = fichier_produits
         self.produits_par_categorie = {}
-        self.categories = []
+        self.categories = [] #Liste pour les catégories d'aliments
         self.page_courante = 0
-        self.categories_par_page = 3
+        self.categories_par_page = 3 # Un nombre de 3 catégorie par page de l'application
         self.listes_categorie = {} # Contient les QListWidget actuellement affichés
         
-        # NOUVEAU: Dictionnaire pour stocker toutes les sélections (produit -> est_sélectionné)
+        #Dictionnaire pour stocker toutes les sélections (produit -> est_sélectionné)
         self.selections_globales = {} 
 
         self.layout = QVBoxLayout()
@@ -128,7 +132,7 @@ class ChoisirProduits(QWidget):
         titre.setObjectName("titrePrincipal")
         self.layout.addWidget(titre)
 
-        self.scroll = QScrollArea()
+        self.scroll = QScrollArea()#Pouvoir sélectionner les produits en scrollant
         self.scroll.setWidgetResizable(True)
         self.layout.addWidget(self.scroll)
 
@@ -138,20 +142,21 @@ class ChoisirProduits(QWidget):
         self.container.setLayout(self.container_layout)
 
         nav_layout = QHBoxLayout()
-        self.btn_precedent = QPushButton("Page Précédente")
+        self.btn_precedent = QPushButton("Page Précédente") #Boutton précédent pour aller dans la page d'avant
         self.btn_precedent.clicked.connect(self.page_precedente)
         nav_layout.addWidget(self.btn_precedent)
-        self.btn_suivant = QPushButton("Page Suivante")
+        self.btn_suivant = QPushButton("Page Suivante")  #Boutton suivant pour aller dans la page d'après
         self.btn_suivant.clicked.connect(self.page_suivante)
         nav_layout.addWidget(self.btn_suivant)
         self.layout.addLayout(nav_layout)
 
-        self.btn_valider = QPushButton("Valider la sélection")
+        self.btn_valider = QPushButton("Valider la sélection") #Boutton pour valider la sélection de produits
         self.btn_valider.clicked.connect(self.valider_selection)
         self.layout.addWidget(self.btn_valider)
 
         self.charger_produits()
-
+        
+    #Fonction pour charger les produits
     def charger_produits(self):
         try:
             with open(self.fichier_produits, 'r', encoding='utf-8') as f:
@@ -160,7 +165,7 @@ class ChoisirProduits(QWidget):
             QMessageBox.critical(self, "Erreur", f"Impossible de charger la liste des produits:\n{e}")
             self.produits_par_categorie = {}
         
-        # NOUVEAU: Initialiser selections_globales avec tous les produits non sélectionnés au départ
+        #Initialiser selections_globales avec tous les produits non sélectionnés au départ
         for categorie, produits in self.produits_par_categorie.items():
             for produit in produits:
                 self.selections_globales[produit] = False
@@ -169,6 +174,7 @@ class ChoisirProduits(QWidget):
         self.page_courante = 0
         self.afficher_page()
         
+        #On définit la taille de police des label, des listWidget et des Bouttons
         self.setStyleSheet("""
             QLabel#titrePrincipal {
                 font-size: 16px;
@@ -209,7 +215,7 @@ class ChoisirProduits(QWidget):
                 self.selections_globales[item.text()] = item.isSelected()
 
     def afficher_page(self):
-        # NOUVEAU: Sauvegarder les sélections AVANT de vider les listes
+        #Sauvegarder les sélections AVANT de vider les listes
         self._sauvegarder_selections_courantes()
 
         # Nettoyage des widgets précédents
@@ -245,7 +251,7 @@ class ChoisirProduits(QWidget):
             liste_widget.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
             for produit in produits:
                 item = QListWidgetItem(produit)
-                # NOUVEAU: Restaurer la sélection de l'item si elle était sauvegardée
+                #Restaurer la sélection de l'item si elle était sauvegardée
                 if self.selections_globales.get(produit, False): # Par défaut à False si pas trouvé
                     item.setSelected(True)
                 liste_widget.addItem(item)
@@ -269,21 +275,21 @@ class ChoisirProduits(QWidget):
                     self._clear_layout(child_layout)
 
     def page_precedente(self):
-        # NOUVEAU: Sauvegarder les sélections avant de changer de page
+        #Sauvegarder les sélections avant de changer de page
         self._sauvegarder_selections_courantes()
         if self.page_courante > 0:
             self.page_courante -= 1
             self.afficher_page()
 
     def page_suivante(self):
-        # NOUVEAU: Sauvegarder les sélections avant de changer de page
+        #Sauvegarder les sélections avant de changer de page
         self._sauvegarder_selections_courantes()
         if (self.page_courante + 1) * self.categories_par_page < len(self.categories):
             self.page_courante += 1
             self.afficher_page()
 
     def valider_selection(self):
-        # NOUVEAU: S'assurer que les sélections de la page actuelle sont sauvegardées avant validation
+        #S'assurer que les sélections de la page actuelle sont sauvegardées avant validation
         self._sauvegarder_selections_courantes() 
         
         selection_finale = {}
@@ -301,6 +307,7 @@ class ChoisirProduits(QWidget):
                         total_selectionnes += 1
                         break # Produit trouvé, passer au suivant
 
+        #Si le nombre de produit est inférieur a 20 alors message d'erreur pour nous dire qu'il faut un minima de 20 produits
         if total_selectionnes < 20:
             QMessageBox.warning(
                 self, 
