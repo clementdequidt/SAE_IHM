@@ -6,8 +6,8 @@ class TestPlan(unittest.TestCase):
     """Classe de test pour la classe Plan."""
     
     def setUp(self):
-        """Initialise un plan de 5x5 cases pour les tests."""
-        self.plateau = Plan(5, 5)
+        """Initialise un plan de 3x3 cases pour les tests."""
+        self.plateau = Plan(3, 3)
 
     def test_getters_setters(self):
         """Test les getters et setters pour la longueur et la largeur du plan."""
@@ -81,10 +81,13 @@ class TestPlan(unittest.TestCase):
         self.plateau.getCase((0, 0)).setDepart(True)
         self.plateau.getCase((1, 1)).setItemsAccessible(['eau'])
         self.plateau.getCase((2, 2)).setItemsAccessible(['pain'])
-        chemin = self.plateau.plusCourtCheminListeCourses(['eau', 'pain'])
+        self.plateau.getCase((0, 2)).setCaisse(True)
+        chemin, positionsItems = self.plateau.plusCourtCheminListeCourses(['eau', 'pain'])
         self.assertIn((0, 0), chemin)
         self.assertIn((1, 1), chemin)
         self.assertIn((2, 2), chemin)
+        self.assertIn((0, 2), chemin)
+        self.assertEqual(positionsItems, {(1, 1): ['eau'], (2, 2): ['pain']})
 
 if __name__ == '__main__':
     unittest.main()
