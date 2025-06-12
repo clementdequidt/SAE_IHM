@@ -414,7 +414,7 @@ class Image(QGraphicsView):
 
         self._pixmap_item.setZValue(0)
 
-    def place_product_on_map(self, product_name: str, x: float, y: float, record_history=True):
+    def placer_produit(self, product_name: str, x: float, y: float, record_history=True):
         if product_name in self._product_text_items:
             self._scene.removeItem(self._product_text_items[product_name])
             del self._product_text_items[product_name]
@@ -435,37 +435,37 @@ class Image(QGraphicsView):
             self._product_positions_history.append((product_name, QPointF(x, y)))
             self._history_index += 1
 
-    def remove_product_from_map(self, product_name: str):
+    def retirer_produit(self, product_name: str):
         if product_name in self._product_text_items:
             self._scene.removeItem(self._product_text_items[product_name])
             del self._product_text_items[product_name]
 
-    def undo_last_action(self):
+    def enlever_derniere_action(self):
         if self._history_index >= 0:
             last_action = self._product_positions_history[self._history_index]
             product_name_to_remove = last_action[0]
-            self.remove_product_from_map(product_name_to_remove)
+            self.retirer_produit(product_name_to_remove)
             self._history_index -= 1
-            self._redraw_products_from_history()
+            self.produits()
             return True
         return False
 
-    def redo_last_action(self):
+    def rajouter_derniere_action(self):
         if self._history_index + 1 < len(self._product_positions_history):
             self._history_index += 1
             action_to_redo = self._product_positions_history[self._history_index]
-            self.place_product_on_map(action_to_redo[0], action_to_redo[1].x(), action_to_redo[1].y(), record_history=False)
+            self.placer_produit(action_to_redo[0], action_to_redo[1].x(), action_to_redo[1].y(), record_history=False)
             return True
         return False
 
-    def _redraw_products_from_history(self):
+    def produits(self):
         for product_item in list(self._product_text_items.values()):
             self._scene.removeItem(product_item)
         self._product_text_items.clear()
 
         for i in range(self._history_index + 1):
             product_name, position = self._product_positions_history[i]
-            self.place_product_on_map(product_name, position.x(), position.y(), record_history=False)
+            self.placer_produit(product_name, position.x(), position.y(), record_history=False)
 
 
     def wheelEvent(self, event: QWheelEvent):
@@ -517,7 +517,7 @@ class Image(QGraphicsView):
             center_x = grid_x + self.CELL_SIZE / 2
             center_y = grid_y + self.CELL_SIZE / 2
 
-            self.place_product_on_map(product_name, center_x, center_y, record_history=True)
+            self.placer_produit(product_name, center_x, center_y, record_history=True)
 
             event.acceptProposedAction()
             self.produit_place_signal.emit(product_name, QPointF(center_x, center_y))
@@ -576,19 +576,22 @@ class FenetreAppli(QMainWindow):
         self.info_stack_layout.setSpacing(2) 
 
         self.store_name_label = QLabel("Magasin : N/A")
-        self.store_name_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #005999;") 
-        self.store_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
+        self.store_name_label.setObjectName("storeNameLabel")
+        self.store_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_stack_layout.addWidget(self.store_name_label)
+        self.store_name_label.setStyleSheet("font-size: 20px; font-weight: bold;")
 
         self.gerant_name_label = QLabel("Gérant : N/A")
-        self.gerant_name_label.setStyleSheet("font-size: 14px; color: #333;")
+        self.gerant_name_label.setObjectName("gerantNameLabel")
         self.gerant_name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_stack_layout.addWidget(self.gerant_name_label)
+        self.gerant_name_label.setStyleSheet("font-size: 16px;")
 
         self.store_address_label = QLabel("Adresse : N/A")
-        self.store_address_label.setStyleSheet("font-size: 14px; color: #333;")
-        self.store_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter) 
+        self.store_address_label.setObjectName("storeAddressLabel")
+        self.store_address_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_stack_layout.addWidget(self.store_address_label)
+        self.store_address_label.setStyleSheet("font-size: 16px;")
 
         
         self.top_bar_layout.addStretch(1) 
@@ -688,7 +691,7 @@ class FenetreAppli(QMainWindow):
         self._update_undo_redo_actions_state()
 
     def undo_action(self):
-        if self.image_viewer.undo_last_action():
+        if self.image_viewer.enlever_derniere_action():
             self.positions_produits.clear()
             for product_name, pos in self.image_viewer._product_positions_history[:self.image_viewer._history_index + 1]:
                 self.positions_produits[product_name] = {'x': pos.x(), 'y': pos.y()}
@@ -698,7 +701,7 @@ class FenetreAppli(QMainWindow):
         self._update_undo_redo_actions_state()
 
     def redo_action(self):
-        if self.image_viewer.redo_last_action():
+        if self.image_viewer.rajouter_derniere_action():
             product_name, pos = self.image_viewer._product_positions_history[self.image_viewer._history_index]
             self.positions_produits[product_name] = {'x': pos.x(), 'y': pos.y()}
             self.barre_etat.showMessage("Action rétablie.", 2000)
@@ -831,7 +834,7 @@ class FenetreAppli(QMainWindow):
                     x = pos_data.get('x')
                     y = pos_data.get('y')
                     if x is not None and y is not None:
-                        self.image_viewer.place_product_on_map(product_name, x, y, record_history=True)
+                        self.image_viewer.placer_produit(product_name, x, y, record_history=True)
                         self.positions_produits[product_name] = {'x': x, 'y': y}
 
                 self.barre_etat.showMessage(f"Plan chargé: {file_path}", 3000)
@@ -846,7 +849,7 @@ class FenetreAppli(QMainWindow):
             self.barre_etat.showMessage('Ouverture de plan annulée.', 2000)
 
 
-# --- Gestionnaire de navigation entre pages ---
+# Gestionnaire de navigation entre pages
 class AppMultiPages(QStackedWidget):
     def __init__(self):
         super().__init__()
