@@ -81,6 +81,7 @@ class TestPlan(unittest.TestCase):
         self.plateau.getCase((0, 0)).setDepart(True)
         self.plateau.getCase((1, 1)).setItemsAccessible(['eau'])
         self.plateau.getCase((2, 2)).setItemsAccessible(['pain'])
+        self.plateau.getCase((0, 2)).setCaisse(True)
         chemin = self.plateau.plusCourtCheminListeCourses(['eau', 'pain'])
         self.assertIn((0, 0), chemin)
         self.assertIn((1, 1), chemin)
