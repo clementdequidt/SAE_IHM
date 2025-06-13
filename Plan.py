@@ -7,7 +7,7 @@ import random
 class Plan():
     """Classe représentant le plan d'un magasin."""
     
-    # OK
+
     def __init__(self, longueur: int, largeur: int):
         """Constructeur qui initialise un objet Plan et ses attributs.
         
@@ -22,7 +22,7 @@ class Plan():
         self.__largeur = largeur
         self.__cases = [[Case((i, j)) for j in range(largeur)] for i in range(longueur)]
     
-    # OK
+    
     def getLongueur(self):
         """Retourne la longueur du plan.
         
@@ -31,7 +31,7 @@ class Plan():
         """
         return self.__longueur
     
-    # OK
+    
     def getLargeur(self):
         """Retourne la largeur du plan.
         
@@ -40,7 +40,7 @@ class Plan():
         """
         return self.__largeur
     
-    # OK
+    
     def getCase(self, coord: tuple):
         """Retourne la case aux coordonnées spécifiées.
         
@@ -54,7 +54,7 @@ class Plan():
             return self.__cases[coord[0]][coord[1]]
         return None
     
-    # OK
+    
     def setLongueur(self, longueur: int):
         """Modifie la longueur du plan.
         
@@ -63,7 +63,7 @@ class Plan():
         """
         self.__longueur = longueur
         
-    # OK
+    
     def setLargeur(self, largeur: int):
         """Modifie la largeur du plan.
         
@@ -72,12 +72,12 @@ class Plan():
         """
         self.__largeur = largeur
     
-    # OK
+    
     def regenererPlan(self):
         """Regénère le plan en créant une nouvelle matrice de cases."""
         self.__cases = [[Case((i, j)) for j in range(self.__longueur)] for i in range(self.__largeur)]
     
-    # OK
+    
     def casesVoisines(self, case: Case):
         """Retourne les 4 cases voisines d'une case donnée.
         
@@ -96,7 +96,7 @@ class Plan():
                 voisins.append(self.__cases[voisinCoord[0]][voisinCoord[1]])
         return voisins
     
-    # OK
+    
     def setItemsAccessible(self, coord: tuple):
         """Met à jour les items accessibles depuis la case aux coordonnées spécifiées.
         
@@ -117,7 +117,7 @@ class Plan():
         else:
             case.setItemsAccessible([])
     
-    # OK
+    
     def remplirCase(self, coord: tuple):
         """Remplit les informations d'une case aux coordonnées spécifiées en demandant à l'utilisateur de saisir les informations pour chaque case.
         
@@ -136,14 +136,14 @@ class Plan():
             case.setObstacle(input(f"Est-ce que la case {coord} est un obstacle ? (oui/non) ").strip().lower() == 'oui')
             self.setItemsAccessible(coord)
     
-    # OK
+    
     def remplirPlan(self):
         """Remplit toutes les cases du plan."""
         for i in range(self.__longueur):
             for j in range(self.__largeur):
                 self.remplirCase((i, j))
     
-    # OK
+    
     def trouverDepart(self):
         """Trouve la case de départ dans le plan.
         
@@ -157,7 +157,7 @@ class Plan():
                     return case
         return None
     
-    # OK
+    
     def trouverCasesPossiblesItem(self, item: str):
         """Trouve toutes les cases accessibles depuis lesquels un item spécifique est accessible.
         
@@ -175,7 +175,7 @@ class Plan():
                     casesPossibles.append(case)
         return casesPossibles
     
-    # OK
+    
     def trouverCaseAVisiterItem(self, depart: Case, item: str):
         """Trouve la case la plus proche à visiter pour prendre un item spécifique à partir d'une case de départ quelconque.
         
@@ -199,7 +199,7 @@ class Plan():
             return caseAVisiter
         return None
     
-    # OK
+    
     def trouverCaissesPossibles(self):
         """Trouve toutes les caisses dans le plan.
         
@@ -214,7 +214,7 @@ class Plan():
                     caissesPossibles.append(case)
         return caissesPossibles
     
-    # OK mais à tester en condition réelle quand même
+    
     def trouverCaisseAVisiter(self, depart: Case):
         """Trouve la caisse la plus proche à visiter à partir d'une case de départ quelconque.
         
@@ -237,7 +237,7 @@ class Plan():
             return caisseAVisiter
         return None
     
-    # OK mais à tester en condition réelle quand même
+  
     def plusCourtCheminCase(self, depart: tuple, arrivee: tuple):
         """Trouve le plus court chemin entre deux cases spécifiées par leurs coordonnées.
         
@@ -286,7 +286,8 @@ class Plan():
         chemin.reverse()
         return chemin
     
-    # OK mais à tester en condition réelle quand même
+  
+  
     def plusCourtCheminListeCourses(self, listeCourses: list):
         """Trouve le plus court chemin pour collecter les items d'une liste de courses à partir du point de départ jusqu'à la caisse.
         
@@ -331,7 +332,7 @@ class Plan():
 
         return cheminTotal, positionsItems
     
-    # OK
+
     def listeCoursesAleatoire(self):
         """Génère une liste de courses aléatoire à partir des produits disponibles dans le magasin pour faire des tests.
         

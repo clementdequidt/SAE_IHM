@@ -13,6 +13,9 @@ class Projet:
         self.positionsProduits = {}
 
     def chargerQuestionnaire(self, data: dict):
+        """
+        Charge les informations du questionnaire à partir d'un dictionnaire.
+        """
         self.nomProjet = data.get("nomProjet", "")
         self.auteur = data.get("auteur", "")
         self.dateCreation = data.get("dateCreation", "")
@@ -20,6 +23,9 @@ class Projet:
         self.adresseMagasin = data.get("adresse_magasin", "")
 
     def exporterQuestionnaire(self):
+        """
+        Exporte les informations du questionnaire sous forme de dictionnaire prêtes à être sauvegardées ou partagées.
+        """
         return {
             "nom_projet": self.nomProjet,
             "auteur": self.auteur,
@@ -29,6 +35,10 @@ class Projet:
         }
 
     def sauvegarderProjet(self, fichierPath):
+        """
+        Sauvegarde les informations du projet dans un fichier JSON.
+
+        """
         data = {
             "questionnaire_info": self.exporterQuestionnaire(),
             "chemin_image_plan": self.cheminImage,

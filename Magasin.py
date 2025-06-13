@@ -29,7 +29,7 @@ class Magasin():
         self.__listeProduitsDispo = listeProduitsDispo
         self.__plan = Plan(longueur, largeur)
 
-    # OK
+
     def getNomProjet(self):
         """Retourne le nom du projet.
         
@@ -38,7 +38,7 @@ class Magasin():
         """
         return self.__nomProjet
     
-    # OK
+
     def getAuteurProjet(self):
         """Retourne l'auteur du projet.
         
@@ -46,8 +46,8 @@ class Magasin():
             str: Auteur du projet.
         """
         return self.__auteurProjet
-    
-    # OK
+
+
     def getDate(self):
         """Retourne la date de création du projet.
         
@@ -56,7 +56,7 @@ class Magasin():
         """
         return self.__date
     
-    # OK
+    
     def getNomMagasin(self):
         """Retourne le nom du magasin.
         
@@ -65,7 +65,7 @@ class Magasin():
         """
         return self.__nomMagasin
     
-    # OK
+    
     def getAdresse(self):
         """Retourne l'adresse du magasin.
         
@@ -74,7 +74,7 @@ class Magasin():
         """
         return self.__adresse
     
-    # OK
+    
     def getListeProduitsDispo(self):
         """Retourne la liste des produits disponibles dans le magasin.
         
@@ -83,7 +83,7 @@ class Magasin():
         """
         return self.__listeProduitsDispo
     
-    # OK
+    
     def getPlan(self):
         """Retourne le plan du magasin.
         
@@ -92,7 +92,7 @@ class Magasin():
         """
         return self.__plan
     
-    # OK
+    
     def setNomProjet(self, nomProjet: str):
         """Définit le nom du projet.
         
@@ -101,7 +101,7 @@ class Magasin():
         """
         self.__nomProjet = nomProjet
     
-    # OK
+    
     def setAuteurProjet(self, auteurProjet: str):
         """Définit l'auteur du projet.
         
@@ -110,7 +110,7 @@ class Magasin():
         """
         self.__auteurProjet = auteurProjet
     
-    # OK
+    
     def setDate(self, date: dt):
         """Définit la date de création du projet.
         
@@ -119,7 +119,7 @@ class Magasin():
         """
         self.__date = date
     
-    # OK
+    
     def setNomMagasin(self, nomMagasin: str):
         """Définit le nom du magasin.
         
@@ -128,7 +128,7 @@ class Magasin():
         """
         self.__nomMagasin = nomMagasin
     
-    # OK
+    
     def setAdresse(self, adresse: str):
         """Définit l'adresse du magasin.
         
@@ -137,7 +137,7 @@ class Magasin():
         """
         self.__adresse = adresse
         
-    # OK
+    
     def setListeProduitsDispo(self, listeProduitsDispo: list):
         """Définit la liste des produits disponibles dans le magasin.
         
@@ -146,7 +146,7 @@ class Magasin():
         """
         self.__listeProduitsDispo = listeProduitsDispo
     
-    # OK
+    
     def setPlan(self, plan: Plan):
         """Définit le plan du magasin.
         
@@ -155,13 +155,13 @@ class Magasin():
         """
         self.__plan = plan
 
-    # OK mais est-ce que c'est utile ?
+    
     def remplirMagasin(self):
         """Remplit le magasin avec des produits dans les rayons et des informations sur chaque case."""
         print("Remplissage du magasin...")
         self.__plan.remplirPlan()
 
-    # à relire et surement à revoir
+    
     def afficher_etat(self):
         """Affiche l'état du magasin, y compris les rayons, les obstacles et le point de départ."""
         print("Etat du magasin")

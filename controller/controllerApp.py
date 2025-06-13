@@ -7,25 +7,35 @@ from view.choisirProduits import ChoisirProduits
 from view.fenetreAppli import FenetreAppli
 
 class AppMultiPages(QStackedWidget):
+    """
+        Classe qui gère les différentes pages de l'application.
+    """
     def __init__(self):
         super().__init__()
-
+        # Affichage de la page de questionnaire (la première page)
         self.pageQuestionnaire = PageQuestionnaire(self.allerAChoisirProduits)
-        self.addWidget(self.pageQuestionnaire)  # index 0
-
+        self.addWidget(self.pageQuestionnaire) 
+        # Affichage de la page de sélection des produits (ladeuxième page)
         self.choisirProduits = ChoisirProduits()
         self.choisirProduits.selectionValidee.connect(self.allerAFenetreAppli)
-        self.addWidget(self.choisirProduits) # index 1
+        self.addWidget(self.choisirProduits) 
 
         self.fenetreAppli = None
 
         self.setCurrentIndex(0)
 
     def allerAChoisirProduits(self):
+        """
+        Méthode pour passer à la page de sélection des produits.
+        """
         self.setCurrentIndex(1)
         self.choisirProduits.chargerProduits()
 
     def allerAFenetreAppli(self, produitsSelectionnes: dict):
+        """
+        Méthode pour passer à la fenêtre principale de l'application avec les produits sélectionnés.
+
+        """
         cheminImage = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../ressources/Quadrillage_Final.jpg')
         questionnaireData = self.pageQuestionnaire.getQuestionnaireData()
 

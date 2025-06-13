@@ -53,6 +53,9 @@ class ChoisirProduits(QWidget):
         
     #Fonction pour charger les produits
     def chargerProduits(self):
+        """
+        Charge les produits depuis un fichier JSON et initialise les listes de produits par catégorie.
+        """
         try:
             currentDir = os.path.dirname(os.path.abspath(__file__))
             filePath = os.path.join(currentDir, self.fichierProduits)
@@ -121,7 +124,9 @@ class ChoisirProduits(QWidget):
                     self.selectionsGlobales[item.text()] = item.isSelected()
 
     def afficherPage(self):
-        #Sauvegarder les sélections AVANT de vider les listes
+        """
+        Sauvegarder les sélections AVANT de vider les listes
+        """
         self.sauvegarderSelectionsCourantes()
 
         # Nettoyage des widgets précédents
@@ -170,6 +175,9 @@ class ChoisirProduits(QWidget):
         self.btnSuivant.setEnabled(end < len(self.categories))
 
     def clearLayout(self, layout):
+        """
+        Efface tous les widgets d'un layout donné.
+        """
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
