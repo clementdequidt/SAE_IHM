@@ -119,7 +119,7 @@ class ModeleMagasin:
         except Exception as e:
             return False, f"Échec de l'enregistrement de la liste de courses : {e}"
     
-    def calculerCheminListeCourses(self, cheminFichier: str):
+    def calculerCheminListeCourses(self):
         """
         Calcule le chemin optimal pour la liste de courses en utilisant l'algorithme de Magasin.
         Retourne une liste contenant le chemin des produits dans l'ordre optimal,
@@ -134,9 +134,10 @@ class ModeleMagasin:
                 date = self.infosMagasin.get("date_creation", "N/A"),
                 nomMagasin = self.infosMagasin.get("nom_magasin", "Aucun magasin"),
                 adresse = self.infosMagasin.get("adresse_magasin", "N/A"),
-                listeProduitsDispo = self.produitsDisponibles
+                listeProduitsDispo = self.produitsDisponibles()
             )
-            chemin = magasin.calculerChemin(self.listeCourses, self.positionsProduits)
+            magasin.remplirMagasin()
+            chemin = magasin.getPlan().plusCourtCheminListeCourses(self.listeCourses)
             return chemin
         except Exception as e:
             return False, f"Échec du calcul du chemin pour la liste de courses : {e}"
