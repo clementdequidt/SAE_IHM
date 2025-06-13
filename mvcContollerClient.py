@@ -2,8 +2,8 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QPixmap
-from MVC_MODEL import ModeleMagasin # Correctement importé
-from MVC_VIEW import FenetreAppliVue # Correctement importé
+from mvcModeleClient import ModeleMagasin # Correctement importé
+from mvcVueClient import FenetreAppliVue # Correctement importé
 
 class ControleurMagasin:
     def __init__(self, modele: ModeleMagasin, vue: FenetreAppliVue):

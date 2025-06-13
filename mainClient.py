@@ -1,9 +1,9 @@
 # main.py
 import sys
 from PyQt6.QtWidgets import QApplication
-from MVC_MODEL import ModeleMagasin
-from MVC_VIEW import FenetreAppliVue
-from MVC_CONTROLLER import ControleurMagasin
+from mvcModeleClient import ModeleMagasin
+from mvcVueClient import FenetreAppliVue
+from mvcContollerClient import ControleurMagasin
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
