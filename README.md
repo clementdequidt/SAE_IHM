@@ -2,12 +2,12 @@
 
 **Mot de passe application gérant : SAE_Graphes**
 
-*Etudiant 1 :* DEQUIDT Clément *TPB*
+*Etudiant 1 :* DEQUIDT Clément *TPB* (clementdequidt)
 
-*Etudiant 2 :* DELDALLE Pierre *TPA*
+*Etudiant 2 :* DELDALLE Pierre *TPA* (Pierre-Deldalle)
 
-*Etudiant 3 :* COUSIN Bastien *TPB*
+*Etudiant 3 :* COUSIN Bastien *TPB* (Bastien-Cousin)
 
-*Etudiant 4 :* GROUE Sébastien *TPE*
+*Etudiant 4 :* GROUE Sébastien *TPE* (SebGr2024)
 
 
