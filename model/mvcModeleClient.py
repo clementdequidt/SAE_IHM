@@ -1,7 +1,6 @@
 # MVC_MODELE.py
 import json
 import os
-import Magasin # Assuming Magasin is a relevant module, keeping its name as is unless specified
 from collections import defaultdict
 
 class ModeleMagasin:
