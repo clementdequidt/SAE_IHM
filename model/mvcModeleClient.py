@@ -123,10 +123,10 @@ class ModeleMagasin:
         """
         Calcule le chemin optimal pour la liste de courses en utilisant l'algorithme de Magasin.
         Retourne une liste contenant le chemin des produits dans l'ordre optimal,
-        ou (False, message) en cas d'erreur.
+        ou un message en cas d'erreur.
         """
         if not self.listeCourses:
-            return False, "La liste de courses est vide. Veuillez ajouter des produits avant de calculer le chemin."
+            return "La liste de courses est vide. Veuillez ajouter des produits avant de calculer le chemin."
         try:
             magasin = Magasin.Magasin(
                 nomProjet = self.infosMagasin.get("nom_projet", "Aucun projet"),
@@ -137,7 +137,7 @@ class ModeleMagasin:
                 listeProduitsDispo = self.produitsDisponibles()
             )
             magasin.remplirMagasin()
-            chemin = magasin.getPlan().plusCourtCheminListeCourses(self.listeCourses)
-            return chemin
+            chemin, positionsItems = magasin.getPlan().plusCourtCheminListeCourses(self.listeCourses)
+            return chemin, positionsItems
         except Exception as e:
-            return False, f"Échec du calcul du chemin pour la liste de courses : {e}"
+            return f"Échec du calcul du chemin pour la liste de courses : {e}"

@@ -22,6 +22,7 @@ class ControleurMagasin:
         self.vue.boutonRetirerListe.clicked.connect(self.gererRetirerSelectionDeListeCourses)
         self.vue.boutonEffacerListe.clicked.connect(self.gererEffacerListeCourses)
         self.vue.boutonEnregistrerListe.clicked.connect(self.gererEnregistrerListeCourses)
+        self.vue.boutonCalculerChemin.clicked.connect(self.calculerChemin)
 
     def mettreAJourVueDepuisModele(self):
         """Met à jour toutes les parties de la vue en fonction de l'état actuel du modèle."""
@@ -127,3 +128,8 @@ class ControleurMagasin:
                 self.vue.afficherMessageInfo("Enregistrement réussi", f"Votre liste de courses a été enregistrée à :\n{cheminFichier}")
             else:
                 self.vue.afficherMessageCritique("Erreur d'enregistrement", message)
+    
+    def calculerChemin(self):
+        chemin, positionsItems = ModeleMagasin.calculerCheminListeCourses(self)
+        if isinstance(chemin, list) and isinstance(positionsItems, dict):
+            self.vue.afficherCheminListeCourses(chemin, positionsItems)

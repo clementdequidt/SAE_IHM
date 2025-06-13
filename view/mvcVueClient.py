@@ -190,6 +190,9 @@ class FenetreAppliVue(QMainWindow):
         self.boutonEnregistrerListe = QPushButton("Enregistrer la liste")
         layoutBoutonsListeCourses.addWidget(self.boutonEnregistrerListe)
         
+        self.boutonCalculerChemin = QPushButton("Calculer le chemin")
+        layoutBoutonsListeCourses.addWidget(self.boutonCalculerChemin)
+        
         layoutListeCourses.addLayout(layoutBoutonsListeCourses)
 
         self.dockProduitsDisponibles.setWidget(conteneurListeCourses)
@@ -340,3 +343,21 @@ class FenetreAppliVue(QMainWindow):
         """Contrôle la visibilité du dock de la liste de produits."""
         self.dockProduitsDisponibles.setVisible(visible)
         self.actionBasculerDock.setChecked(visible)
+    
+    def afficherCheminListeCourses(self, chemin: list, positionsItems: dict):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        cell_size = 51
+        for coord in chemin:
+            if coord not in positionsItems.keys():
+                painter.setBrush(QColor("red"))
+                center_x = coord[0] * cell_size + cell_size // 2
+                center_y = coord[1] * cell_size + cell_size // 2
+                radius = cell_size // 3
+                painter.drawEllipse(center_x - radius, center_y - radius, radius * 2, radius * 2)
+            else:
+                painter.setBrush(QColor("red"))
+                center_x = coord[0] * cell_size + cell_size // 2
+                center_y = coord[1] * cell_size + cell_size // 2
+                radius = cell_size // 2
+                painter.drawEllipse(center_x - radius, center_y - radius, radius * 2, radius * 2)
