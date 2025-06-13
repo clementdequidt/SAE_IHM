@@ -98,4 +98,4 @@ Membres Présents :
 - Fin du développement de l'IHM Gérant -> Clément DEQUIDT (matin)
 - Poursuite de développement de l'IHM Client -> Clément DEQUIDT et Bastien COUSIN(après-midi)
 - Mise en place d'un système de mot de passe sur l'IHM gérant -> Pierre DELDALLE (après-midi)
-- Documentation IHM Gérant -> Pierre DELDALLE et Sébastien GROUÉ (après-midi)
+- Documentation IHM Gérant -> Pierre DELDALLE (après-midi) et Sébastien GROUÉ (matin + après-midi)
