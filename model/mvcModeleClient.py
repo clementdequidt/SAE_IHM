@@ -2,6 +2,7 @@
 import json
 import os
 from collections import defaultdict
+import Magasin
 
 class ModeleMagasin:
     def __init__(self):
@@ -101,3 +102,25 @@ class ModeleMagasin:
             return True, f"Liste de courses enregistrée dans {cheminFichier}"
         except Exception as e:
             return False, f"Échec de l'enregistrement de la liste de courses : {e}"
+    
+    def calculerCheminListeCourses(self, cheminFichier: str):
+        """
+        Calcule le chemin optimal pour la liste de courses en utilisant l'algorithme de Magasin.
+        Retourne une liste contenant le chemin des produits dans l'ordre optimal,
+        ou (False, message) en cas d'erreur.
+        """
+        if not self.listeCourses:
+            return False, "La liste de courses est vide. Veuillez ajouter des produits avant de calculer le chemin."
+        try:
+            magasin = Magasin.Magasin(
+                nomProjet = self.infosMagasin.get("nom_projet", "Aucun projet"),
+                auteurProjet = self.infosMagasin.get("auteur", "N/A"),
+                date = self.infosMagasin.get("date_creation", "N/A"),
+                nomMagasin = self.infosMagasin.get("nom_magasin", "Aucun magasin"),
+                adresse = self.infosMagasin.get("adresse_magasin", "N/A"),
+                listeProduitsDispo = self.produitsDisponibles
+            )
+            chemin = magasin.calculerChemin(self.listeCourses, self.positionsProduits)
+            return chemin
+        except Exception as e:
+            return False, f"Échec du calcul du chemin pour la liste de courses : {e}"
