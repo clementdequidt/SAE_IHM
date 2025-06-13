@@ -190,10 +190,13 @@ class FenetreAppliVue(QMainWindow):
         self.boutonEnregistrerListe = QPushButton("Enregistrer la liste")
         layoutBoutonsListeCourses.addWidget(self.boutonEnregistrerListe)
         
-        self.boutonCalculerChemin = QPushButton("Calculer le chemin")
-        layoutBoutonsListeCourses.addWidget(self.boutonCalculerChemin)
-        
         layoutListeCourses.addLayout(layoutBoutonsListeCourses)
+        
+        layoutBoutonsSousBoutons = QHBoxLayout()
+        self.boutonCalculerChemin = QPushButton("Calculer le chemin")
+        layoutBoutonsSousBoutons.addWidget(self.boutonCalculerChemin)
+        
+        layoutListeCourses.addLayout(layoutBoutonsSousBoutons)
 
         self.dockProduitsDisponibles.setWidget(conteneurListeCourses)
 
