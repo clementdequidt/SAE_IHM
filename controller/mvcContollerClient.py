@@ -32,8 +32,8 @@ class ControleurMagasin:
             # Effacer la carte si aucune image n'est définie (par exemple, après le chargement initial ou une erreur)
             self.vue.visionneuseImage.definirPixmapCarte(QPixmap()) 
 
-        self.vue.afficherProduitsDisponibles(self.modele.produits_disponibles) # Corrected
-        self.vue.afficherPositionsProduitsSurCarte(self.modele.positions_produits) # Corrected
+        self.vue.afficherProduitsDisponibles(self.modele.produitsDisponibles) # Corrected
+        self.vue.afficherPositionsProduitsSurCarte(self.modele.positionsProduits) # Corrected
         self.vue.mettreAJourAffichageListeCourses(self.modele.listeCourses) # Corrected
 
     # --- Gestionnaires des actions de l'interface utilisateur (rôle du contrôleur) ---
