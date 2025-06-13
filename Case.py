@@ -21,7 +21,7 @@ class Case():
         self.__itemsAccessible: list = []
         self.__obstacle = obstacle
     
-    # OK
+    
     def getCoord(self):
         """Retourne les coordonnées de la case.
         
@@ -30,7 +30,7 @@ class Case():
         """
         return self.__coord
     
-    # OK
+    
     def isDepart(self):
         """Indique si la case est un point de départ.
         
@@ -39,7 +39,7 @@ class Case():
         """
         return self.__depart
     
-    # OK
+    
     def isCaisse(self):
         """Indique si la case est une caisse.
         
@@ -48,7 +48,7 @@ class Case():
         """
         return self.__caisse
     
-    # OK
+    
     def isRayon(self):
         """Indique si la case est un rayon.
         
@@ -57,7 +57,7 @@ class Case():
         """
         return self.__rayon
     
-    # OK
+    
     def getItemsInRayon(self):
         """Retourne la liste des items présents dans le rayon de la case.
         
@@ -66,7 +66,7 @@ class Case():
         """
         return self.__itemsInRayon
     
-    # OK
+    
     def getItemsAccessible(self):
         """Retourne la liste des items accessibles depuis cette case.
         
@@ -75,7 +75,7 @@ class Case():
         """
         return self.__itemsAccessible
     
-    # OK
+    
     def isObstacle(self):
         """Indique si la case est un obstacle.
         
@@ -84,7 +84,7 @@ class Case():
         """
         return self.__obstacle
     
-    # OK
+    
     def setCoord(self, coord: tuple):
         """Définit les coordonnées de la case.
         
@@ -93,7 +93,7 @@ class Case():
         """
         self.__coord = coord
         
-    # OK
+    
     def setDepart(self, depart: bool):
         """Définit si la case est un point de départ.
         
@@ -102,7 +102,7 @@ class Case():
         """
         self.__depart = depart
     
-    # OK
+    
     def setCaisse(self, caisse: bool):
         """Définit si la case est une caisse.
         
@@ -111,7 +111,7 @@ class Case():
         """
         self.__caisse = caisse
     
-    # OK
+    
     def setRayon(self, rayon: bool):
         """Définit si la case est un rayon.
         
@@ -120,7 +120,7 @@ class Case():
         """
         self.__rayon = rayon
     
-    # OK
+    
     def setItemsInRayon(self, itemsInRayon: list):
         """Définit la liste des items présents dans le rayon de la case.
         
@@ -129,7 +129,7 @@ class Case():
         """
         self.__itemsInRayon = itemsInRayon
     
-    # OK
+    
     def setItemsAccessible(self, itemsAccessible: list):
         """Définit la liste des items accessibles depuis cette case.
         
@@ -138,7 +138,7 @@ class Case():
         """
         self.__itemsAccessible = itemsAccessible
     
-    # OK
+    
     def setObstacle(self, obstacle: bool):
         """Définit si la case est un obstacle.
         
