@@ -17,24 +17,20 @@ class ModeleMagasin:
         self.listeCourses = [] # Liste des noms de produits
 
     # --- Propriétés pour accéder aux données ---
-    @property
-    def infos_magasin(self):
+    
+    def infosMagasin(self):
         return self.infosMagasin
 
-    @property
-    def chemin_image_carte(self):
+    def cheminImageCarte(self):
         return self.cheminImageCarte
 
-    @property
-    def produits_disponibles(self):
+    def produitsDisponibles(self):
         return self.produitsDisponibles
-
-    @property
-    def positions_produits(self):
+    
+    def positionsProduits(self):
         return self.positionsProduits
 
-    @property
-    def liste_courses(self):
+    def listeCourses(self):
         return self.listeCourses[:] # Retourne une copie pour éviter les modifications externes
 
     # --- Chargement / Enregistrement des données ---
@@ -79,11 +75,11 @@ class ModeleMagasin:
         """Ajoute un produit à la liste de courses."""
         self.listeCourses.append(nomProduit)
 
-    def retirerProduitsDeListeCourses(self, noms_produits: list[str]):
+    def retirerProduitsDeListeCourses(self, nomsProduits: list[str]):
         """Supprime les produits spécifiés de la liste de courses.
         Si plusieurs instances du même produit existent, une instance par nom fourni est supprimée.
         """
-        for nomProduit in noms_produits:
+        for nomProduit in nomsProduits:
             if nomProduit in self.listeCourses:
                 self.listeCourses.remove(nomProduit)
 

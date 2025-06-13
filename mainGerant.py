@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from view.fenetre_connexion import FenetreConnexion
-from controller.controller_app import AppMultiPages
+from view.fenetreConnexion import FenetreConnexion
+from controller.controllerApp import AppMultiPages
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

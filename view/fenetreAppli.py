@@ -1,11 +1,10 @@
-import os
-import sys
-import json 
-
-from .image_widget import ImageWidget
+from .imageWidget import ImageWidget
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+import json
+import os
+import sys
 
 class FenetreAppli(QMainWindow):
     def __init__(self, chemin: str = None, produitsSelectionnes: dict = None, questionnaireData: dict = None):
@@ -14,14 +13,11 @@ class FenetreAppli(QMainWindow):
         self.produitsSelectionnes = produitsSelectionnes if produitsSelectionnes is not None else {}
         self.positionsProduits = {} 
         self.questionnaireData = questionnaireData if questionnaireData is not None else {}
-        
-        # Attribut pour stocker les types de cellules (transmis depuis ImageWidget)
-        self.cellTypes = {} 
 
         self.setWindowTitle("Gestionnaire de Magasin (Gérant)")
         screenHeometry = QApplication.primaryScreen().availableGeometry()
         self.setGeometry(screenHeometry)
-        
+       
         self.topBarWidget = QWidget()
         self.topBarLayout = QHBoxLayout() 
         self.topBarWidget.setLayout(self.topBarLayout)
@@ -64,8 +60,6 @@ class FenetreAppli(QMainWindow):
         self.setCentralWidget(self.mainContentWidget) 
 
         self.imageViewer.produitPlaceSignal.connect(self.enregistrerPositionProduit)
-        # Connecter le nouveau signal d'ImageWidget
-        self.imageViewer.cellTypeChange.connect(self.enregistrerTypeCellule)
 
         self.dock = QDockWidget('Produits à placer')
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
@@ -144,30 +138,18 @@ class FenetreAppli(QMainWindow):
         self.barreEtat.showMessage(f"Produit '{productName}' placé à ({position.x():.0f}, {position.y():.0f})", 3000)
         self.mettreAJourDerniereAction()
 
-    def enregistrerTypeCellule(self, pos: QPointF, cellType: str):
-        gridX = int(pos.x())
-        gridY = int(pos.y())
-        if cellType == "clear":
-            if (gridX, gridY) in self.cellTypes:
-                del self.cellTypes[(gridX, gridY)]
-                self.barreEtat.showMessage(f"Type de cellule effacé à ({gridX}, {gridY})", 2000)
-        else:
-            self.cellTypes[(gridX, gridY)] = cellType
-            self.barreEtat.showMessage(f"Cellule à ({gridX}, {gridY}) définie comme '{cellType}'", 2000)
-
     #Fonction pour vérifier si l'utilisateur peut retourner ou non en arrière
     def annulerAction(self):
         if self.imageViewer.enleverDerniereAction():
             self.positionsProduits.clear()
             
-            #Recherche dans l'historique l'action a annuler
+             #Recherche dans l'historique l'action a annuler
             for productName, pos in self.imageViewer.productPositionsHistory[:self.imageViewer.historyIndex + 1]:
                 self.positionsProduits[productName] = {'x': pos.x(), 'y': pos.y()}
             self.barreEtat.showMessage("Action annulée.", 2000) #Message affiché si l'action a été supprimée
         else:
             self.barreEtat.showMessage("Aucune action à annuler.", 2000) #Pas d'action à annuler
         self.mettreAJourDerniereAction()
-
     #Fonction pour rétablir l'action annulée juste avant
     def refaireAction(self):
         if self.imageViewer.rajouterDerniereAction():
@@ -181,6 +163,7 @@ class FenetreAppli(QMainWindow):
 
     #Fonction pour afficher ou masquer la liste des produits sur l'interface
     def basculerListeProduits(self):
+        
         #Action pour masquer la liste des produits
         if self.dock.isVisible():
             self.dock.hide()
@@ -243,11 +226,6 @@ class FenetreAppli(QMainWindow):
             "positions_produits_finales": {
                 name: {'x': pos['x'], 'y': pos['y']}
                 for name, pos in self.positionsProduits.items()
-            },
-            # Ajouter des types de cellules aux données enregistrées
-            "cellules_types": {
-                f"{x},{y}": cellType 
-                for (x, y), cellType in self.cellTypes.items()
             }
         }
 
@@ -263,7 +241,9 @@ class FenetreAppli(QMainWindow):
                 self.barreEtat.showMessage(f"Plan final enregistré dans {filePath}", 5000)
                 QMessageBox.information(self, "Enregistrement réussi", f"Le plan final du magasin a été enregistré dans :\n{filePath}")
                 
+                #Exception pour capturer toutes les erreurs possibles pendant l'enregistrement
             except Exception as e:
+                
                 #Message d'erreur
                 QMessageBox.critical(self, "Erreur d'enregistrement", f"Impossible d'enregistrer le plan final:\n{e}")
 
@@ -272,15 +252,14 @@ class FenetreAppli(QMainWindow):
         self.barreEtat.showMessage('Création d\'un nouveau plan...', 2000)
         boite = QFileDialog()
         chemin, validation = boite.getOpenFileName(self, "Sélectionner un nouveau plan de magasin",
-                                                    directory = os.path.join(sys.path[0]),
-                                                    filter="Images (*.png *.jpg *.jpeg *.bmp *.gif)")
+                                                 directory = os.path.join(sys.path[0]),
+                                                 filter="Images (*.png *.jpg *.jpeg *.bmp *.gif)")
         if validation:
             self.__chemin = chemin
             self.imageViewer.setPixmap(QPixmap(self.__chemin))
             self.positionsProduits.clear()
             self.imageViewer.productPositionsHistory = [] 
             self.imageViewer.historyIndex = -1
-            self.imageViewer.cellTypes.clear() # Effacer les types de cellules sur le nouveau plan
             self.mettreAJourDerniereAction()
             self.barreEtat.showMessage('Nouveau plan chargé. Vous pouvez placer des produits.', 2000)
         else:
@@ -326,20 +305,9 @@ class FenetreAppli(QMainWindow):
                         self.imageViewer.placerProduit(productName, x, y, recordHistory=True)
                         self.positionsProduits[productName] = {'x': x, 'y': y}
 
-                # Charger les types de cellules
-                cellTypeChargé = projectData.get("cellules_types", {})
-                self.cellTypes.clear()
-                for keyStr, cellType in cellTypeChargé.items():
-                    x_str, y_str = keyStr.split(',')
-                    x, y = int(x_str), int(y_str)
-                    self.cellTypes[(x, y)] = cellType
-                
-                # Définir les types de cellules dans ImageWidget et mettre à jour les visuels
-                self.imageViewer.cellTypes = self.cellTypes
-                self.imageViewer.updateCellVisuals()
-
                 self.barreEtat.showMessage(f"Plan chargé: {filePath}", 3000)
                 self.mettreAJourDerniereAction()
+
 
             except json.JSONDecodeError:
                 QMessageBox.critical(self, "Erreur d'ouverture", "Le fichier sélectionné n'est pas un fichier JSON valide.")

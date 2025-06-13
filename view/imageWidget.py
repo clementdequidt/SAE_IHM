@@ -4,72 +4,76 @@ from PyQt6.QtGui import *
 
 class ImageWidget(QGraphicsView):
     produitPlaceSignal = pyqtSignal(str, QPointF)
-    cellTypeChange = pyqtSignal(QPointF, str) 
 
-    # Taille d'une case
+    #Taille d'une case
     CELL_SIZE = 51
 
     def __init__(self, chemin: str):
         super().__init__()
 
-        self.zoom = 0 
+        self.zoom = 0 # Le zoom
         self.empty = True
         self.scene = QGraphicsScene(self)
         self.setScene(self.scene)
 
+        #Pour afficher l'image
         self.pixmapItem = QGraphicsPixmapItem()
         self.scene.addItem(self.pixmapItem)
         
+        #stocker les cellules de la case
         self.gridCells = []
         self.productTextItems = {}
         self.productPositionsHistory = [] 
         self.historyIndex = -1 
 
-        self.cellTypes = {}
-        self.cellRectangleItems = {} 
-        
+        #Configure le point de zoom 
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
 
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         
+        #Cache les barres de défilement
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
+        #Accepte le drag and drop
         self.setAcceptDrops(True)
 
+        #Pour changer l'image grâce au chemin du fichier
         pixmap = QPixmap(chemin)
         if pixmap.isNull():
-            label = QLabel(f"Image non trouvée : {chemin}") 
+            label = QLabel(f"Image non trouvée : {chemin}") #Si le chemin de l'image n'est pas trouvé
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.scene.addWidget(label)
         else:
-            self.setPixmap(pixmap) 
+            self.setPixmap(pixmap) #Sinon on affiche l'image
 
     def setPixmap(self, pixmap: QPixmap):
+        #Met le zoom a zero
         self.zoom = 0
         self.pixmapItem.setPixmap(pixmap)
         
+        #Définit la taille de la scène à celle de l’image
         self.scene.setSceneRect(QRectF(pixmap.rect()))
         
+        #Pour mettre l'image dans la fenêtre
         self.fitInView(self.scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
         self.empty = False
         self.drawGridOverlay()
         
-        self.productPositionsHistory = []
+        #Remettre a vide l'historique
+        self.ProductPositionsHistory = []
         self.historyIndex = -1
-        self.cellTypes.clear() 
-        self.miseAJourVisuelCell() 
 
     def drawGridOverlay(self):
+        
         # Supprime les cellules de la grille
         for cell in self.gridCells:
             self.scene.removeItem(cell)
         self.gridCells.clear()
-        self.cellRectangleItems.clear() 
 
         #Pour reprendre la taille de l'image
         imageWidth = self.pixmapItem.pixmap().width()
@@ -82,84 +86,14 @@ class ImageWidget(QGraphicsView):
         # Crée une grille rectangulaire par-dessus l’image
         for y in range(0, imageHeight, self.CELL_SIZE):
             for x in range(0, imageWidth, self.CELL_SIZE):
-                rectangleItem = QGraphicsRectItem(x, y, self.CELL_SIZE, self.CELL_SIZE)
-                rectangleItem.setPen(gridPen)
-                self.scene.addItem(rectangleItem)
-                self.gridCells.append(rectangleItem)
-                self.cellRectangleItems[(x, y)] = rectangleItem 
-                rectangleItem.setZValue(1) 
+                rectItem = QGraphicsRectItem(x, y, self.CELL_SIZE, self.CELL_SIZE)
+                rectItem.setPen(gridPen)
+                self.scene.addItem(rectItem)
+                self.gridCells.append(rectItem)
+                rectItem.setZValue(1) #Pour mettre la grille par dessus notre image
 
         self.pixmapItem.setZValue(0)
-        self.miseAJourVisuelCell() 
 
-    def miseAJourVisuelCell(self):
-        """Met à jour l'apparence visuelle de toutes les cellules de la grille en fonction de leur type."""
-        for (x, y), rectangleItem in self.cellRectangleItems.items():
-            cellType = self.cellTypes.get((x, y))
-            pen = QPen(QColor(255, 0, 0, 100)) 
-            pen.setWidth(2)
-            
-            brush = QBrush(Qt.BrushStyle.NoBrush)
-            if cellType == "entrée":
-                brush = QBrush(QColor(0, 255, 0, 100)) # Vert pour entrée
-            elif cellType == "obstacle":
-                brush = QBrush(QColor(255, 0, 0, 100)) # Rouge pour obstacle
-            elif cellType == "rayon":
-                brush = QBrush(QColor(0, 0, 255, 100)) # Bleu pour rayon
-            elif cellType == "caisse":
-                brush = QBrush(QColor(255, 255, 0, 100)) # Jaune pour caisse
-            
-            rectangleItem.setPen(pen)
-            rectangleItem.setBrush(brush)
-            rectangleItem.setZValue(2)
-
-    def setCellType(self, gridX: int, gridY: int, cellType: str):
-        """Définit le type d'une cellule et met à jour sa représentation visuelle."""
-        if (gridX, gridY) in self.cellRectangleItems:
-            self.cellTypes[(gridX, gridY)] = cellType
-            self.miseAJourVisuelCell()
-            self.cellTypeChange.emit(QPointF(gridX, gridY), cellType) 
-
-    def mousePressEvent(self, event: QMouseEvent):
-        if event.button() == Qt.MouseButton.RightButton:
-            scenePos = self.mapToScene(event.pos())
-            
-            # Calculer les coordonnées en haut à gauche de la cellule de la grille cliquée
-            gridX = (int(scenePos.x()) // self.CELL_SIZE) * self.CELL_SIZE
-            gridY = (int(scenePos.y()) // self.CELL_SIZE) * self.CELL_SIZE
-
-            self.showContextMenu(gridX, gridY, event.globalPosition().toPoint())
-        else:
-            super().mousePressEvent(event) 
-
-    def showContextMenu(self, gridX: int, gridY: int, globalPos: QPoint):
-        """Affiche un menu contextuel pour définir les types de cellules."""
-        menu = QMenu(self)
-
-        actionEntree = menu.addAction("Définir comme Entrée Magasin")
-        actionObstacle = menu.addAction("Définir comme Obstacle")
-        actionRayon = menu.addAction("Définir comme Rayon")
-        actionCaisse = menu.addAction("Définir comme Caisse")
-        
-        # Ajouter une option pour effacer le type de cellule
-        actionEffacer = menu.addAction("Effacer le type de cellule")
-
-        action = menu.exec(globalPos)
-
-        if action == actionEntree:
-            self.setCellType(gridX, gridY, "entrée")
-        elif action == actionObstacle:
-            self.setCellType(gridX, gridY, "obstacle")
-        elif action == actionRayon:
-            self.setCellType(gridX, gridY, "rayon")
-        elif action == actionCaisse:
-            self.setCellType(gridX, gridY, "caisse")
-        elif action == actionEffacer:
-            if (gridX, gridY) in self.cellTypes:
-                del self.cellTypes[(gridX, gridY)] 
-                self.miseAJourVisuelCell() 
-                self.cellTypeChange.emit(QPointF(gridX, gridY), "clear") 
-            
     def placerProduit(self, productName: str, x: float, y: float, recordHistory=True):
         if productName in self.productTextItems:
             self.scene.removeItem(self.productTextItems[productName])
@@ -172,7 +106,7 @@ class ImageWidget(QGraphicsView):
         textItem.setPos(x - textItem.boundingRect().width() / 2,
                          y - textItem.boundingRect().height() / 2)
 
-        textItem.setZValue(3)
+        textItem.setZValue(2)
         self.scene.addItem(textItem)
         self.productTextItems[productName] = textItem
 
@@ -212,6 +146,7 @@ class ImageWidget(QGraphicsView):
         for i in range(self.historyIndex + 1):
             productName, position = self.productPositionsHistory[i]
             self.placerProduit(productName, position.x(), position.y(), recordHistory=False)
+
 
     def wheelEvent(self, event: QWheelEvent):
         if self.empty:
