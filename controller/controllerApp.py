@@ -1,3 +1,5 @@
+#Fichier crée par Bastien COUSIN, Pierre DELDALLE, Clément DEQUIDT, Sébastien GROUÉ
+
 import os
 from PyQt6.QtWidgets import QStackedWidget
 from view.pageQuestionnaire import PageQuestionnaire

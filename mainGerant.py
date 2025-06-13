@@ -1,3 +1,4 @@
+#Fichier crée par Bastien COUSIN, Pierre DELDALLE, Clément DEQUIDT, Sébastien GROUÉ
 import sys
 from PyQt6.QtWidgets import QApplication
 from view.fenetreConnexion import FenetreConnexion

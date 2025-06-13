@@ -1,3 +1,4 @@
+#Fichier crée par Bastien COUSIN, Pierre DELDALLE, Clément DEQUIDT, Sébastien GROUÉ
 # MVC_MODELE.py
 import json
 import os
@@ -18,18 +19,33 @@ class ModeleMagasin:
     # --- Propriétés pour accéder aux données ---
     
     def infosMagasin(self):
+        """
+        Renvoie les informations du magasin
+        """
         return self.infosMagasin
 
     def cheminImageCarte(self):
+        """
+        Renvoie le chemin sur la carte
+        """
         return self.cheminImageCarte
 
     def produitsDisponibles(self):
+        """
+        Renvoie les position des produits disponibles
+        """
         return self.produitsDisponibles
     
     def positionsProduits(self):
+        """
+        Renvoie la position des produits
+        """
         return self.positionsProduits
 
     def listeCourses(self):
+        """
+        Renvoie la liste de courses
+        """
         return self.listeCourses[:] # Retourne une copie pour éviter les modifications externes
 
     # --- Chargement / Enregistrement des données ---

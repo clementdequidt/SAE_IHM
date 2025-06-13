@@ -1,3 +1,4 @@
+#Fichier crée par Bastien COUSIN, Pierre DELDALLE, Clément DEQUIDT, Sébastien GROUÉ
 class Case():
     """Classe représentant une case d'un plan de magasin."""
     

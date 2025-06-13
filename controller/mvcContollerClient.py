@@ -1,3 +1,4 @@
+#Fichier crée par Bastien COUSIN, Pierre DELDALLE, Clément DEQUIDT, Sébastien GROUÉ
 # MVC_CONTROLEUR.py
 import sys
 from PyQt6.QtWidgets import QApplication
