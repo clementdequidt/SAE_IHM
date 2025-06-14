@@ -52,3 +52,63 @@ Membres présents :
     Bastien COUSIN
 
 - Réflexion sur le codage du magasin et des cases -> Clément DEQUIDT et Bastien COUSIN
+
+*Mardi 10/06, J1 SAE 8h30/16h :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+ - Création des maquettes des deux applications -> Pierre DELDALLE (gérant) et Sébastien GROUÉ (client)
+ - Développement des classes Case, Plan et Magasin qui seront utilisées dans les modèles des applications -> Clément DEQUIDT et Bastien COUSIN
+ - Commencement du développement des vues des deux applications -> Pierre DELDALLE (gérant) et Sébastien GROUÉ (client)
+
+
+*Mercredi 11/06, J2 SAE 8h30/11h30 en présentiel 13h30/17h30 en télétravail :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+- Création des tests unitaires -> Clément DEQUIDT (matin)
+- Développement des classes Case, Plan et Magasin finies -> Bastien COUSIN
+- Documentation des classes et des tests unitaires -> Bastien COUSIN
+- Développement IHM Gérant (quasiment fini, manque une grosse fonctionnalité) -> D'abord Pierre DELDALLE (matin) puis Clément DEQUIDT et Sébastien GROUÉ (après-midi)
+- Début de la documentation de l'IHM Gérant -> Sébastien GROUÉ (après-midi)
+- Début écriture de la notice d'utilisateur -> Pierre DELDALLE (après-midi)
+- Développement IHM client (Fichier a pars afin de faire des test) -> Sébastien GROUÉ (matin)
+  
+*Jeudi 12/06, J3 SAE 8h30/17h :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+- Fin de l'écriture de la notice d'utilisateur -> Pierre DELDALLE (matin)
+- Dernières modifications des classes Case, Plan et Magasin car bugs ou fonctionnalités manquantes + documentation -> Bastien COUSIN (matin)
+- Fin du développement de l'IHM Gérant -> Clément DEQUIDT (matin)
+- Poursuite de développement de l'IHM Client (reprise des tests d'hier) -> Clément DEQUIDT et Bastien COUSIN(après-midi)
+- Mise en place d'un système de mot de passe sur l'IHM gérant -> Pierre DELDALLE (après-midi)
+- Documentation IHM Gérant -> Pierre DELDALLE (après-midi) et Sébastien GROUÉ (matin + après-midi)
+
+
+*Vendredi 13/06, J4 SAE 9h/16h :*
+
+Membres Présents :
+
+      Bastien COUSIN
+      Pierre DELDALLE
+      Clément DEQUIDT
+      Sébastien GROUÉ 
+
+- Fin du développement de l'IHM Client (chemin entre les différents produits + esthétisme appli) -> Bastien COUSIN et Clément DEQUIDT
+- Fin de l'écriture des docstrings et de la documentation -> Pierre DELDALLE et Sébastien GROUÉ
